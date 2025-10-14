@@ -107,7 +107,7 @@ export function Dashboard({ user }: DashboardProps) {
             </div>
             
             <div className="border border-gray-200 rounded-lg p-4">
-              <h3 className="font-semibold text-gray-800 mb-2">Matt Classes</h3>
+              <h3 className="font-semibold text-gray-800 mb-2">Mat Classes</h3>
               <p className="text-gray-600 text-sm leading-relaxed">
                 Floor-based Pilates exercises using body weight and small props to strengthen your core and improve posture.
               </p>
@@ -159,7 +159,7 @@ export function Dashboard({ user }: DashboardProps) {
                 className="w-full h-48 object-cover hover:scale-105 transition-transform duration-300"
               />
               <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-3">
-                <p className="text-white text-sm font-medium">Matt Sessions</p>
+                <p className="text-white text-sm font-medium">Mat Sessions</p>
               </div>
             </div>
             
@@ -197,13 +197,13 @@ export function Dashboard({ user }: DashboardProps) {
             </div>
             
             <div className="relative overflow-hidden rounded-lg">
-              <img 
-                src="/FullSizeRender.png" 
-                alt="Studio space and equipment"
+              <img
+                src="/IMG_5942 copy.png"
+                alt="Group Pilates session"
                 className="w-full h-48 object-cover hover:scale-105 transition-transform duration-300"
               />
               <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-3">
-                <p className="text-white text-sm font-medium">Ocean Setting</p>
+                <p className="text-white text-sm font-medium">Group Classes</p>
               </div>
             </div>
             
