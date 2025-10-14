@@ -75,11 +75,6 @@ export function Dashboard({ user }: DashboardProps) {
               sessions that focus on strength, alignment, and flow.
             </p>
           </div>
-          <p className="text-gray-600 leading-relaxed">
-            Founded with a passion for holistic wellness, we believe in the transformative power of Pilates to strengthen 
-            both body and mind. Our experienced instructor guides you through personalized sessions designed to improve 
-            flexibility, core strength, and overall well-being in our serene coastal sanctuary.
-          </p>
         </div>
 
         {/* Pilates Offerings Section */}
@@ -166,11 +161,11 @@ export function Dashboard({ user }: DashboardProps) {
             <div className="relative overflow-hidden rounded-lg">
               <img
                 src="/IMG_8662 copy.png"
-                alt="Instructor working with client on reformer"
+                alt="Instructor working with client on tower"
                 className="w-full h-48 object-cover hover:scale-105 transition-transform duration-300"
               />
               <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-3">
-                <p className="text-white text-sm font-medium">Reformer Sessions</p>
+                <p className="text-white text-sm font-medium">Tower Sessions</p>
               </div>
             </div>
 
@@ -181,7 +176,7 @@ export function Dashboard({ user }: DashboardProps) {
                 className="w-full h-48 object-cover hover:scale-105 transition-transform duration-300"
               />
               <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-3">
-                <p className="text-white text-sm font-medium">Personal Training</p>
+                <p className="text-white text-sm font-medium">Reformer Sessions</p>
               </div>
             </div>
             
@@ -199,11 +194,11 @@ export function Dashboard({ user }: DashboardProps) {
             <div className="relative overflow-hidden rounded-lg">
               <img
                 src="/IMG_5942 copy.png"
-                alt="Group Pilates session"
+                alt="Personal instruction session"
                 className="w-full h-48 object-cover hover:scale-105 transition-transform duration-300"
               />
               <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-3">
-                <p className="text-white text-sm font-medium">Group Classes</p>
+                <p className="text-white text-sm font-medium">Personal Instruction</p>
               </div>
             </div>
             
