@@ -107,7 +107,7 @@ export function Dashboard({ user }: DashboardProps) {
             </div>
             
             <div className="border border-gray-200 rounded-lg p-4">
-              <h3 className="font-semibold text-gray-800 mb-2">Mat Classes</h3>
+              <h3 className="font-semibold text-gray-800 mb-2">Matt Classes</h3>
               <p className="text-gray-600 text-sm leading-relaxed">
                 Floor-based Pilates exercises using body weight and small props to strengthen your core and improve posture.
               </p>
