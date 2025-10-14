@@ -186,13 +186,13 @@ export function Dashboard({ user }: DashboardProps) {
             </div>
             
             <div className="relative overflow-hidden rounded-lg">
-              <img 
-                src="/IMG_5942.png" 
-                alt="Instructor and client working together"
+              <img
+                src="/FullSizeRender copy.png"
+                alt="Ocean view near the studio"
                 className="w-full h-48 object-cover hover:scale-105 transition-transform duration-300"
               />
               <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-3">
-                <p className="text-white text-sm font-medium">One-on-One Sessions</p>
+                <p className="text-white text-sm font-medium">Ocean Setting</p>
               </div>
             </div>
             
