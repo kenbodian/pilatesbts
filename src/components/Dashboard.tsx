@@ -164,8 +164,8 @@ export function Dashboard({ user }: DashboardProps) {
             </div>
             
             <div className="relative overflow-hidden rounded-lg">
-              <img 
-                src="/IMG_8664.png" 
+              <img
+                src="/IMG_8662 copy.png"
                 alt="Instructor working with client on reformer"
                 className="w-full h-48 object-cover hover:scale-105 transition-transform duration-300"
               />
@@ -173,10 +173,10 @@ export function Dashboard({ user }: DashboardProps) {
                 <p className="text-white text-sm font-medium">Reformer Sessions</p>
               </div>
             </div>
-            
+
             <div className="relative overflow-hidden rounded-lg">
-              <img 
-                src="/IMG_5870.png" 
+              <img
+                src="/IMG_8664 copy.png"
                 alt="Instructor guiding client through exercises"
                 className="w-full h-48 object-cover hover:scale-105 transition-transform duration-300"
               />
