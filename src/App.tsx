@@ -116,7 +116,13 @@ function App() {
 
   switch (appState) {
     case 'landing':
-      return <LandingPage onPasscodeSuccess={handlePasscodeSuccess} />;
+      return (
+        <LandingPage
+          onPasscodeSuccess={handlePasscodeSuccess}
+          hasUser={!!user}
+          onSkipToApp={user ? handlePasscodeSuccess : undefined}
+        />
+      );
     case 'auth':
       return <AuthPage onBack={handleBackToLanding} />;
     case 'waiver':
@@ -131,7 +137,13 @@ function App() {
     case 'dashboard':
       return <Dashboard user={user} />;
     default:
-      return <LandingPage onPasscodeSuccess={handlePasscodeSuccess} />;
+      return (
+        <LandingPage
+          onPasscodeSuccess={handlePasscodeSuccess}
+          hasUser={!!user}
+          onSkipToApp={user ? handlePasscodeSuccess : undefined}
+        />
+      );
   }
 }
 

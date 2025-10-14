@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
-import { Waves, Lock } from 'lucide-react';
+import { Waves, Lock, LogIn } from 'lucide-react';
 
 interface LandingPageProps {
   onPasscodeSuccess: () => void;
+  hasUser?: boolean;
+  onSkipToApp?: () => void;
 }
 
-export function LandingPage({ onPasscodeSuccess }: LandingPageProps) {
+export function LandingPage({ onPasscodeSuccess, hasUser, onSkipToApp }: LandingPageProps) {
   const [passcode, setPasscode] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -107,6 +109,18 @@ export function LandingPage({ onPasscodeSuccess }: LandingPageProps) {
             )}
           </button>
         </form>
+
+        {hasUser && onSkipToApp && (
+          <div className="mt-6">
+            <button
+              onClick={onSkipToApp}
+              className="w-full flex items-center justify-center gap-2 text-gray-600 py-3 px-4 rounded-lg font-medium border border-gray-300 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 transition-all duration-200"
+            >
+              <LogIn className="w-5 h-5" />
+              Continue as Existing Member
+            </button>
+          </div>
+        )}
 
         <div className="mt-8 pt-6 border-t border-gray-200">
           <p className="text-center text-xs text-gray-500">
