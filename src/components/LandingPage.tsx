@@ -72,49 +72,70 @@ export function LandingPage({ onPasscodeSuccess, hasUser, onSkipToApp }: Landing
           </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div>
-            <label htmlFor="passcode" className="block text-sm font-medium text-gray-700 mb-2">
-              Member Passcode
-            </label>
-            <div className="relative">
-              <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-              <input
-                type="password"
-                id="passcode"
-                value={passcode}
-                onChange={(e) => setPasscode(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                placeholder="Enter passcode"
-                required
-              />
-            </div>
-            {error && (
-              <p className="text-red-500 text-sm mt-2 animate-pulse">{error}</p>
-            )}
-          </div>
-
-          <button
-            type="submit"
-            disabled={isLoading}
-            className="w-full bg-gradient-to-r from-blue-600 to-teal-600 text-white py-3 px-4 rounded-lg font-medium hover:from-blue-700 hover:to-teal-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transform transition-all duration-200 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
-          >
-            {isLoading ? (
-              <div className="flex items-center justify-center">
-                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
-                Verifying...
+        {!hasUser ? (
+          <>
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div>
+                <label htmlFor="passcode" className="block text-sm font-medium text-gray-700 mb-2">
+                  Member Passcode
+                </label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                  <input
+                    type="password"
+                    id="passcode"
+                    value={passcode}
+                    onChange={(e) => setPasscode(e.target.value)}
+                    className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                    placeholder="Enter passcode"
+                    required
+                  />
+                </div>
+                {error && (
+                  <p className="text-red-500 text-sm mt-2 animate-pulse">{error}</p>
+                )}
               </div>
-            ) : (
-              'Access Member Portal'
-            )}
-          </button>
-        </form>
 
-        {hasUser && onSkipToApp && (
-          <div className="mt-6">
+              <button
+                type="submit"
+                disabled={isLoading}
+                className="w-full bg-gradient-to-r from-blue-600 to-teal-600 text-white py-3 px-4 rounded-lg font-medium hover:from-blue-700 hover:to-teal-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transform transition-all duration-200 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+              >
+                {isLoading ? (
+                  <div className="flex items-center justify-center">
+                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
+                    Verifying...
+                  </div>
+                ) : (
+                  'New Member Registration'
+                )}
+              </button>
+            </form>
+
+            <div className="mt-6 relative">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-gray-200"></div>
+              </div>
+              <div className="relative flex justify-center text-sm">
+                <span className="px-2 bg-white/80 text-gray-500">or</span>
+              </div>
+            </div>
+
+            <div className="mt-6">
+              <button
+                onClick={onSkipToApp}
+                className="w-full flex items-center justify-center gap-2 text-gray-700 py-3 px-4 rounded-lg font-medium border-2 border-gray-300 hover:bg-gray-50 hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 transition-all duration-200"
+              >
+                <LogIn className="w-5 h-5" />
+                Already Registered? Sign In
+              </button>
+            </div>
+          </>
+        ) : (
+          <div>
             <button
               onClick={onSkipToApp}
-              className="w-full flex items-center justify-center gap-2 text-gray-600 py-3 px-4 rounded-lg font-medium border border-gray-300 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 transition-all duration-200"
+              className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-teal-600 text-white py-3 px-4 rounded-lg font-medium hover:from-blue-700 hover:to-teal-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transform transition-all duration-200 hover:scale-105"
             >
               <LogIn className="w-5 h-5" />
               Continue as Existing Member
