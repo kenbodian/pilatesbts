@@ -103,6 +103,10 @@ function App() {
     setAppState('landing');
   };
 
+  const handleGoToAuth = () => {
+    setAppState('auth');
+  };
+
   if (loading || checkingWaiver || checkingAdmin) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-teal-50 flex items-center justify-center">
@@ -120,7 +124,7 @@ function App() {
         <LandingPage
           onPasscodeSuccess={handlePasscodeSuccess}
           hasUser={!!user}
-          onSkipToApp={user ? handlePasscodeSuccess : undefined}
+          onSkipToApp={user ? handlePasscodeSuccess : handleGoToAuth}
         />
       );
     case 'auth':
@@ -141,7 +145,7 @@ function App() {
         <LandingPage
           onPasscodeSuccess={handlePasscodeSuccess}
           hasUser={!!user}
-          onSkipToApp={user ? handlePasscodeSuccess : undefined}
+          onSkipToApp={user ? handlePasscodeSuccess : handleGoToAuth}
         />
       );
   }
