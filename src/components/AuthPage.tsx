@@ -4,10 +4,11 @@ import { supabase } from '../lib/supabase';
 
 interface AuthPageProps {
   onBack: () => void;
+  signInOnly?: boolean;
 }
 
-export function AuthPage({ onBack }: AuthPageProps) {
-  const [isLogin, setIsLogin] = useState(false);
+export function AuthPage({ onBack, signInOnly = false }: AuthPageProps) {
+  const [isLogin, setIsLogin] = useState(signInOnly);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [fullName, setFullName] = useState('');
@@ -154,18 +155,20 @@ export function AuthPage({ onBack }: AuthPageProps) {
           </button>
         </form>
 
-        <div className="mt-6 text-center">
-          <button
-            type="button"
-            onClick={() => setIsLogin(!isLogin)}
-            className="text-sm text-blue-600 hover:text-blue-800 font-medium transition-colors"
-          >
-            {isLogin 
-              ? "Don't have an account? Sign up" 
-              : "Already have an account? Sign in"
-            }
-          </button>
-        </div>
+        {!signInOnly && (
+          <div className="mt-6 text-center">
+            <button
+              type="button"
+              onClick={() => setIsLogin(!isLogin)}
+              className="text-sm text-blue-600 hover:text-blue-800 font-medium transition-colors"
+            >
+              {isLogin
+                ? "Don't have an account? Sign up"
+                : "Already have an account? Sign in"
+              }
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

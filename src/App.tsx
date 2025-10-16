@@ -7,7 +7,7 @@ import { AdminDashboard } from './components/AdminDashboard';
 import { useAuth } from './hooks/useAuth';
 import { supabase } from './lib/supabase';
 
-type AppState = 'landing' | 'auth' | 'waiver' | 'dashboard' | 'admin';
+type AppState = 'landing' | 'auth' | 'auth-signin' | 'waiver' | 'dashboard' | 'admin';
 
 function App() {
   const { user, loading } = useAuth();
@@ -104,7 +104,7 @@ function App() {
   };
 
   const handleGoToAuth = () => {
-    setAppState('auth');
+    setAppState('auth-signin');
   };
 
   if (loading || checkingWaiver || checkingAdmin) {
@@ -129,6 +129,8 @@ function App() {
       );
     case 'auth':
       return <AuthPage onBack={handleBackToLanding} />;
+    case 'auth-signin':
+      return <AuthPage onBack={handleBackToLanding} signInOnly />;
     case 'waiver':
       return (
         <WaiverForm
