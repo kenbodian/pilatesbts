@@ -255,27 +255,28 @@ export function Dashboard({ user }: DashboardProps) {
             </p>
           </div>
 
-          <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
-            <div className="flex items-center space-x-3 mb-3">
-              <div className="w-10 h-10 bg-teal-100 rounded-full flex items-center justify-center">
-                <Calendar className="w-5 h-5 text-teal-600" />
-              </div>
-              <h3 className="font-semibold text-gray-800">Book a Session</h3>
+        </div>
+
+        {/* Booking Section */}
+        <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200 mb-8">
+          <div className="flex items-center space-x-3 mb-6">
+            <div className="w-10 h-10 bg-teal-100 rounded-full flex items-center justify-center">
+              <Calendar className="w-5 h-5 text-teal-600" />
             </div>
-            <p className="text-gray-600 text-sm leading-relaxed mb-4">
-              Schedule your personalized Pilates session at a time that works for you.
-            </p>
-            <div className="mt-4">
-              <a
-                href="https://calendar.app.google/rAYXBa1i2YS3eeJm9"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-teal-600 to-blue-600 text-white text-sm font-medium rounded-lg hover:from-teal-700 hover:to-blue-700 transition-all duration-200"
-              >
-                <Calendar className="w-4 h-4 mr-2" />
-                Book Appointment
-              </a>
-            </div>
+            <h2 className="text-xl font-semibold text-gray-800">Book Your Session</h2>
+          </div>
+          <p className="text-gray-600 text-sm mb-6">
+            Schedule your personalized Pilates session at a time that works for you. Select your preferred date and time below.
+          </p>
+          <div className="rounded-lg overflow-hidden border border-gray-200">
+            <iframe
+              src="https://calendar.google.com/calendar/appointments/schedules/AcZssZ1GIR2cd2qK8Q1LOTfKpQ17BQKd1VuJfkVJRPvSB96F8MVZU9cgyldItUmQAp8gryKMUKBR5j8U?gv=true"
+              style={{ border: 0 }}
+              width="100%"
+              height="600"
+              frameBorder="0"
+              title="Book a Pilates Session"
+            />
           </div>
         </div>
 
