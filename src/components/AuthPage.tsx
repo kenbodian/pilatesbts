@@ -88,12 +88,12 @@ export function AuthPage({ onBack, signInOnly = false }: AuthPageProps) {
 
         <div className="text-center mb-8 pt-6">
           <h1 className="text-2xl font-light text-gray-800 mb-2">
-            {isLogin ? 'Welcome Back' : 'Join Our Community'}
+            {isLogin ? 'Welcome Back' : 'Create Your Account'}
           </h1>
           <p className="text-gray-600 text-sm">
-            {isLogin 
-              ? 'Sign in to access your member dashboard' 
-              : 'Create your account to get started'
+            {isLogin
+              ? 'Sign in to access your dashboard'
+              : 'Complete your registration to get started'
             }
           </p>
         </div>
@@ -184,7 +184,7 @@ export function AuthPage({ onBack, signInOnly = false }: AuthPageProps) {
               className="text-sm text-blue-600 hover:text-blue-800 font-medium transition-colors"
             >
               {isLogin
-                ? "Don't have an account? Sign up"
+                ? "Need to create an account? Sign up"
                 : "Already have an account? Sign in"
               }
             </button>
