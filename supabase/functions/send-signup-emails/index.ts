@@ -39,7 +39,7 @@ Deno.serve(async (req: Request) => {
         "Authorization": `Bearer ${resendApiKey}`,
       },
       body: JSON.stringify({
-        from: "Pilates by the Sea <noreply@pilatesbythesea.com>",
+        from: "Pilates by the Sea <onboarding@resend.dev>",
         to: [userEmail],
         subject: "Welcome to Pilates by the Sea!",
         html: `
@@ -117,7 +117,7 @@ Deno.serve(async (req: Request) => {
         "Authorization": `Bearer ${resendApiKey}`,
       },
       body: JSON.stringify({
-        from: "Pilates by the Sea <noreply@pilatesbythesea.com>",
+        from: "Pilates by the Sea <onboarding@resend.dev>",
         to: [adminEmail],
         subject: "New User Registration - Pilates by the Sea",
         html: `
