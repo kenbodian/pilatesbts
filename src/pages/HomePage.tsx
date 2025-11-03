@@ -64,17 +64,17 @@ export function HomePage() {
             </p>
           </Link>
 
-          {/* Dashboard Card */}
+          {/* Assessment Card */}
           <Link
-            to="/dashboard"
+            to="/assessment"
             className="bg-white rounded-lg shadow-lg p-6 hover:shadow-xl transition-shadow duration-300 border border-gray-200"
           >
-            <div className="flex items-center justify-center w-12 h-12 bg-teal-100 rounded-lg mb-4">
-              <ClipboardList className="h-6 w-6 text-teal-600" />
+            <div className="flex items-center justify-center w-12 h-12 bg-purple-100 rounded-lg mb-4">
+              <ClipboardList className="h-6 w-6 text-purple-600" />
             </div>
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">Member Dashboard</h3>
+            <h3 className="text-xl font-semibold text-gray-900 mb-2">Health Assessment</h3>
             <p className="text-gray-600">
-              View your profile, book sessions, and manage your account.
+              Complete your health and fitness assessment to help us personalize your experience.
             </p>
           </Link>
 
