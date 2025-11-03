@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { LandingPage } from './components/LandingPage';
 import { AuthPage } from './components/AuthPage';
 import { WaiverForm } from './components/WaiverForm';
 import { Dashboard } from './components/Dashboard';
@@ -7,11 +6,11 @@ import { AdminDashboard } from './components/AdminDashboard';
 import { useAuth } from './hooks/useAuth';
 import { supabase } from './lib/supabase';
 
-type AppState = 'landing' | 'auth' | 'auth-signin' | 'waiver' | 'dashboard' | 'admin';
+type AppState = 'auth' | 'waiver' | 'dashboard' | 'admin';
 
 function App() {
   const { user, loading } = useAuth();
-  const [appState, setAppState] = useState<AppState>('landing');
+  const [appState, setAppState] = useState<AppState>('auth');
   const [hasWaiver, setHasWaiver] = useState(false);
   const [checkingWaiver, setCheckingWaiver] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
@@ -69,8 +68,6 @@ function App() {
   useEffect(() => {
     if (loading || checkingWaiver || checkingAdmin) return;
 
-    if (appState === 'landing') return; // Stay on landing until passcode entered
-
     if (!user) {
       setAppState('auth');
     } else if (isAdmin) {
@@ -80,31 +77,11 @@ function App() {
     } else {
       setAppState('dashboard');
     }
-  }, [user, hasWaiver, isAdmin, loading, checkingWaiver, checkingAdmin, appState]);
-
-  const handlePasscodeSuccess = () => {
-    if (!user) {
-      setAppState('auth');
-    } else if (isAdmin) {
-      setAppState('admin');
-    } else if (!hasWaiver) {
-      setAppState('waiver');
-    } else {
-      setAppState('dashboard');
-    }
-  };
+  }, [user, hasWaiver, isAdmin, loading, checkingWaiver, checkingAdmin]);
 
   const handleWaiverComplete = () => {
     setHasWaiver(true);
     setAppState('dashboard');
-  };
-
-  const handleBackToLanding = () => {
-    setAppState('landing');
-  };
-
-  const handleGoToAuth = () => {
-    setAppState('auth-signin');
   };
 
   if (loading || checkingWaiver || checkingAdmin) {
@@ -119,18 +96,8 @@ function App() {
   }
 
   switch (appState) {
-    case 'landing':
-      return (
-        <LandingPage
-          onPasscodeSuccess={handlePasscodeSuccess}
-          hasUser={!!user}
-          onSkipToApp={user ? handlePasscodeSuccess : handleGoToAuth}
-        />
-      );
     case 'auth':
-      return <AuthPage onBack={handleBackToLanding} />;
-    case 'auth-signin':
-      return <AuthPage onBack={handleBackToLanding} signInOnly />;
+      return <AuthPage />;
     case 'waiver':
       return (
         <WaiverForm
@@ -143,13 +110,7 @@ function App() {
     case 'dashboard':
       return <Dashboard user={user} />;
     default:
-      return (
-        <LandingPage
-          onPasscodeSuccess={handlePasscodeSuccess}
-          hasUser={!!user}
-          onSkipToApp={user ? handlePasscodeSuccess : handleGoToAuth}
-        />
-      );
+      return <AuthPage />;
   }
 }
 

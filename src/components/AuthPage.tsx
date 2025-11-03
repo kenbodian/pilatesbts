@@ -1,14 +1,9 @@
 import React, { useState } from 'react';
-import { User, Mail, Lock, ArrowLeft } from 'lucide-react';
+import { User, Mail, Lock, Waves } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
-interface AuthPageProps {
-  onBack: () => void;
-  signInOnly?: boolean;
-}
-
-export function AuthPage({ onBack, signInOnly = false }: AuthPageProps) {
-  const [isLogin, setIsLogin] = useState(signInOnly);
+export function AuthPage() {
+  const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [fullName, setFullName] = useState('');
@@ -69,31 +64,27 @@ export function AuthPage({ onBack, signInOnly = false }: AuthPageProps) {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-teal-50 flex items-center justify-center p-4">
-      <div 
+      <div
         className="absolute inset-0 opacity-5"
         style={{
-          backgroundImage: `url('https://images.pexels.com/photos/317157/pexels-photo-317157.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop')`,
+          backgroundImage: `url('https://images.pexels.com/photos/416978/pexels-photo-416978.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop')`,
           backgroundSize: 'cover',
           backgroundPosition: 'center'
         }}
       />
-      
-      <div className="relative max-w-md w-full bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-8">
-        <button
-          onClick={onBack}
-          className="absolute top-4 left-4 p-2 text-gray-500 hover:text-gray-700 transition-colors"
-        >
-          <ArrowLeft className="w-5 h-5" />
-        </button>
 
-        <div className="text-center mb-8 pt-6">
-          <h1 className="text-2xl font-light text-gray-800 mb-2">
-            {isLogin ? 'Welcome Back' : 'Create Your Account'}
+      <div className="relative max-w-md w-full bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-8">
+        <div className="text-center mb-8">
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-blue-600 to-teal-600 rounded-full mb-4">
+            <Waves className="w-8 h-8 text-white" />
+          </div>
+          <h1 className="text-3xl font-light text-gray-800 mb-2">
+            Pilates by the Sea
           </h1>
           <p className="text-gray-600 text-sm">
             {isLogin
               ? 'Sign in to access your dashboard'
-              : 'Complete your registration to get started'
+              : 'Create your account to get started'
             }
           </p>
         </div>
@@ -176,20 +167,18 @@ export function AuthPage({ onBack, signInOnly = false }: AuthPageProps) {
           </button>
         </form>
 
-        {!signInOnly && (
-          <div className="mt-6 text-center">
-            <button
-              type="button"
-              onClick={() => setIsLogin(!isLogin)}
-              className="text-sm text-blue-600 hover:text-blue-800 font-medium transition-colors"
-            >
-              {isLogin
-                ? "Need to create an account? Sign up"
-                : "Already have an account? Sign in"
-              }
-            </button>
-          </div>
-        )}
+        <div className="mt-6 text-center">
+          <button
+            type="button"
+            onClick={() => setIsLogin(!isLogin)}
+            className="text-sm text-blue-600 hover:text-blue-800 font-medium transition-colors"
+          >
+            {isLogin
+              ? "Need to create an account? Sign up"
+              : "Already have an account? Sign in"
+            }
+          </button>
+        </div>
       </div>
     </div>
   );
