@@ -273,7 +273,7 @@ export function Dashboard({ user }: DashboardProps) {
               src="https://calendar.google.com/calendar/appointments/schedules/AcZssZ1GIR2cd2qK8Q1LOTfKpQ17BQKd1VuJfkVJRPvSB96F8MVZU9cgyldItUmQAp8gryKMUKBR5j8U?gv=true"
               style={{ border: 0 }}
               width="100%"
-              height="600"
+              height="800"
               frameBorder="0"
               title="Book a Pilates Session"
             />
