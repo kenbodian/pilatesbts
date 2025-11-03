@@ -28,7 +28,7 @@ export function AuthPage({ onBack, signInOnly = false }: AuthPageProps) {
         });
         if (error) throw error;
       } else {
-        const { error } = await supabase.auth.signUp({
+        const { data, error } = await supabase.auth.signUp({
           email,
           password,
           options: {
@@ -38,6 +38,27 @@ export function AuthPage({ onBack, signInOnly = false }: AuthPageProps) {
           },
         });
         if (error) throw error;
+
+        if (data.user) {
+          try {
+            const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+            const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+
+            await fetch(`${supabaseUrl}/functions/v1/send-signup-emails`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${supabaseKey}`,
+              },
+              body: JSON.stringify({
+                userEmail: email,
+                userName: fullName,
+              }),
+            });
+          } catch (emailError) {
+            console.error('Failed to send welcome email:', emailError);
+          }
+        }
       }
     } catch (error: any) {
       setError(error.message);
