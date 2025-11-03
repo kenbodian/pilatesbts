@@ -1,10 +1,10 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { HomePage } from './pages/HomePage';
-import { WaiverPage } from './pages/WaiverPage';
-import { IntakeFormPage } from './pages/IntakeFormPage';
-import { AdminPage } from './pages/AdminPage';
-import { PasscodePage } from './pages/PasscodePage';
+import { LandingPage } from './components/LandingPage';
+import { WaiverForm } from './components/WaiverForm';
+import { AdminDashboard } from './components/AdminDashboard';
+import { Dashboard } from './components/Dashboard';
 import { LoginForm } from './components/auth/LoginForm';
 import { SignupForm } from './components/auth/SignupForm';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
@@ -17,7 +17,7 @@ function App() {
       <Routes>
         <Route path="/login" element={<LoginForm />} />
         <Route path="/signup" element={<SignupForm />} />
-        <Route path="/passcode" element={<PasscodePage />} />
+        <Route path="/landing" element={<LandingPage />} />
         <Route path="/success" element={<SuccessPage />} />
         <Route path="/" element={
           <ProtectedRoute>
@@ -26,12 +26,12 @@ function App() {
         } />
         <Route path="/waiver" element={
           <ProtectedRoute>
-            <WaiverPage />
+            <WaiverForm />
           </ProtectedRoute>
         } />
-        <Route path="/intake" element={
+        <Route path="/dashboard" element={
           <ProtectedRoute>
-            <IntakeFormPage />
+            <Dashboard />
           </ProtectedRoute>
         } />
         <Route path="/products" element={
@@ -41,7 +41,7 @@ function App() {
         } />
         <Route path="/admin" element={
           <ProtectedRoute>
-            <AdminPage />
+            <AdminDashboard />
           </ProtectedRoute>
         } />
       </Routes>
