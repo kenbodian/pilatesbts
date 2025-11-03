@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { FileText, Save } from 'lucide-react';
+import { FileText, Save, LogOut } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
 interface WaiverFormProps {
@@ -36,6 +36,10 @@ export function WaiverForm({ onComplete, userEmail }: WaiverFormProps) {
   useEffect(() => {
     loadExistingForm();
   }, []);
+
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+  };
 
   const loadExistingForm = async () => {
     try {
@@ -145,16 +149,27 @@ export function WaiverForm({ onComplete, userEmail }: WaiverFormProps) {
     <div className="min-h-screen bg-gray-50 py-8 px-4">
       <div className="max-w-4xl mx-auto">
         <div className="bg-white rounded-2xl shadow-lg p-8">
-          <div className="text-center mb-8">
-            <div className="inline-flex items-center justify-center w-12 h-12 bg-blue-100 rounded-full mb-4">
-              <FileText className="w-6 h-6 text-blue-600" />
+          <div className="relative">
+            <button
+              onClick={handleSignOut}
+              className="absolute top-0 right-0 p-2 text-gray-500 hover:text-gray-700 transition-colors flex items-center gap-2 text-sm"
+              title="Sign Out"
+            >
+              <LogOut className="w-4 h-4" />
+              Sign Out
+            </button>
+
+            <div className="text-center mb-8">
+              <div className="inline-flex items-center justify-center w-12 h-12 bg-blue-100 rounded-full mb-4">
+                <FileText className="w-6 h-6 text-blue-600" />
+              </div>
+              <h1 className="text-2xl font-light text-gray-800 mb-2">
+                {existingForm ? 'Update Client Information & Waiver' : 'Client Information & Liability Waiver'}
+              </h1>
+              <p className="text-gray-600 text-sm">
+                {existingForm ? 'Update your information below' : 'Please complete this form before accessing your member dashboard'}
+              </p>
             </div>
-            <h1 className="text-2xl font-light text-gray-800 mb-2">
-              {existingForm ? 'Update Client Information & Waiver' : 'Client Information & Liability Waiver'}
-            </h1>
-            <p className="text-gray-600 text-sm">
-              {existingForm ? 'Update your information below' : 'Please complete this form before accessing your member dashboard'}
-            </p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-8">
