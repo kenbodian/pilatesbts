@@ -215,30 +215,31 @@ export function Dashboard({ user }: DashboardProps) {
           </div>
         </div>
 
-        {/* Booking Section */}
-        <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200 mb-8">
-          <div className="flex items-center space-x-3 mb-6">
-            <div className="w-10 h-10 bg-teal-100 rounded-full flex items-center justify-center">
-              <Calendar className="w-5 h-5 text-teal-600" />
-            </div>
-            <h2 className="text-xl font-semibold text-gray-800">Book Your Session</h2>
-          </div>
-          <p className="text-gray-600 text-sm mb-4">
-            Schedule your personalized Pilates session at a time that works for you.
-          </p>
-          <a
-            href="https://calendar.app.google/5R2natLo42evouFj6"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-600 to-teal-600 text-white font-medium rounded-lg hover:from-blue-700 hover:to-teal-700 transition-all shadow-md hover:shadow-lg"
-          >
-            <Calendar className="w-5 h-5 mr-2" />
-            Open Booking Calendar
-          </a>
-        </div>
-
         {/* Quick Info Cards */}
         <div className="grid md:grid-cols-3 gap-6 mb-8">
+          <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
+            <div className="flex items-center space-x-3 mb-3">
+              <div className="w-10 h-10 bg-teal-100 rounded-full flex items-center justify-center">
+                <Calendar className="w-5 h-5 text-teal-600" />
+              </div>
+              <h3 className="font-semibold text-gray-800">Book Your Session</h3>
+            </div>
+            <p className="text-gray-600 text-sm leading-relaxed mb-4">
+              Schedule your personalized Pilates session at a time that works for you.
+            </p>
+            <div className="mt-4">
+              <a
+                href="https://calendar.app.google/5R2natLo42evouFj6"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-600 to-teal-600 text-white text-sm font-medium rounded-lg hover:from-blue-700 hover:to-teal-700 transition-colors"
+              >
+                <Calendar className="w-4 h-4 mr-2" />
+                Open Calendar
+              </a>
+            </div>
+          </div>
+
           <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
             <div className="flex items-center space-x-3 mb-3">
               <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
