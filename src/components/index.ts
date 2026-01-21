@@ -5,4 +5,5 @@ export { WaiverForm } from './WaiverForm';
 export { AdminDashboard } from './AdminDashboard';
 export { ErrorBoundary } from './ErrorBoundary';
 export { Toast, ToastContainer } from './Toast';
+export { ContactModal } from './ContactModal';
 export type { ToastType, ToastProps, ToastContainerProps } from './Toast';

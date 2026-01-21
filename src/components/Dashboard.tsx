@@ -1,18 +1,34 @@
-import React from 'react';
-import { MapPin, Phone, LogOut, Waves, Calendar } from 'lucide-react';
+import React, { useState } from 'react';
+import { MapPin, Phone, LogOut, Waves, Calendar, MessageCircle } from 'lucide-react';
 import { supabase } from '../lib/supabase';
+import { ContactModal } from './ContactModal';
+import { useToast } from '../hooks/useToast';
+import { ToastContainer } from './Toast';
 
 interface DashboardProps {
   user: any;
 }
 
 export function Dashboard({ user }: DashboardProps) {
+  const [isContactModalOpen, setIsContactModalOpen] = useState(false);
+  const { toasts, removeToast, success, error } = useToast();
+
   const handleSignOut = async () => {
     await supabase.auth.signOut();
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <>
+      <ToastContainer toasts={toasts} onClose={removeToast} />
+      <ContactModal
+        isOpen={isContactModalOpen}
+        onClose={() => setIsContactModalOpen(false)}
+        userEmail={user?.email || ''}
+        userName={user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'User'}
+        onSuccess={success}
+        onError={error}
+      />
+      <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <header className="bg-white shadow-sm border-b border-gray-200">
         <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
@@ -25,13 +41,23 @@ export function Dashboard({ user }: DashboardProps) {
               <p className="text-sm text-gray-600">Welcome, {user?.user_metadata?.full_name || user?.email}</p>
             </div>
           </div>
-          <button
-            onClick={handleSignOut}
-            className="flex items-center space-x-2 px-4 py-2 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-colors"
-          >
-            <LogOut className="w-4 h-4" />
-            <span className="text-sm">Sign Out</span>
-          </button>
+          <div className="flex items-center space-x-2">
+            <button
+              onClick={() => setIsContactModalOpen(true)}
+              className="flex items-center space-x-2 px-4 py-2 text-teal-600 hover:text-teal-800 hover:bg-teal-50 rounded-lg transition-colors"
+              title="Contact Us"
+            >
+              <MessageCircle className="w-4 h-4" />
+              <span className="text-sm hidden sm:inline">Contact</span>
+            </button>
+            <button
+              onClick={handleSignOut}
+              className="flex items-center space-x-2 px-4 py-2 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-colors"
+            >
+              <LogOut className="w-4 h-4" />
+              <span className="text-sm hidden sm:inline">Sign Out</span>
+            </button>
+          </div>
         </div>
       </header>
 
@@ -363,5 +389,6 @@ export function Dashboard({ user }: DashboardProps) {
         </div>
       </div>
     </div>
+    </>
   );
 }
