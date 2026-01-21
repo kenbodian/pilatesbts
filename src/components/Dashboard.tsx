@@ -330,10 +330,19 @@ export function Dashboard({ user }: DashboardProps) {
               </div>
               <h3 className="font-semibold text-gray-800">Contact & Email</h3>
             </div>
-            <p className="text-gray-600 text-sm leading-relaxed">
+            <p className="text-gray-600 text-sm leading-relaxed mb-4">
               Phone: (386) 387-1738<br />
               pilatesbts@gmail.com
             </p>
+            <div className="mt-4">
+              <button
+                onClick={() => setIsContactModalOpen(true)}
+                className="inline-flex items-center px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-700 transition-colors"
+              >
+                <MessageCircle className="w-4 h-4 mr-2" />
+                Send Us a Message
+              </button>
+            </div>
           </div>
 
         </div>
