@@ -38,6 +38,10 @@ export function ContactModal({
       const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
       const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
+      if (!supabaseUrl || !supabaseKey) {
+        throw new Error('Configuration error. Please try again later.');
+      }
+
       const response = await fetch(`${supabaseUrl}/functions/v1/send-contact-email`, {
         method: 'POST',
         headers: {

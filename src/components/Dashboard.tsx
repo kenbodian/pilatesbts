@@ -198,7 +198,7 @@ export function Dashboard({ user }: DashboardProps) {
 
             <div className="relative overflow-hidden rounded-lg">
               <picture>
-                <source srcSet="/IMG_8662" type="image/webp" />
+                <source srcSet="/IMG_8662 copy.webp" type="image/webp" />
                 <img
                   src="/IMG_8662 copy.png"
                   alt="Instructor working with client on tower"
@@ -213,7 +213,7 @@ export function Dashboard({ user }: DashboardProps) {
 
             <div className="relative overflow-hidden rounded-lg">
               <picture>
-                <source srcSet="/IMG_8664" type="image/webp" />
+                <source srcSet="/IMG_8664 copy.webp" type="image/webp" />
                 <img
                   src="/IMG_8664 copy.png"
                   alt="Instructor guiding client through exercises"
@@ -228,7 +228,7 @@ export function Dashboard({ user }: DashboardProps) {
 
             <div className="relative overflow-hidden rounded-lg">
               <picture>
-                <source srcSet="/FullSizeRender" type="image/webp" />
+                <source srcSet="/FullSizeRender copy.webp" type="image/webp" />
                 <img
                   src="/FullSizeRender copy.png"
                   alt="Ocean view near the studio"
@@ -243,7 +243,7 @@ export function Dashboard({ user }: DashboardProps) {
 
             <div className="relative overflow-hidden rounded-lg">
               <picture>
-                <source srcSet="/IMG_5942" type="image/webp" />
+                <source srcSet="/IMG_5942 copy.webp" type="image/webp" />
                 <img
                   src="/IMG_5942 copy.png"
                   alt="Personal instruction session"
