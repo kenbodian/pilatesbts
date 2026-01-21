@@ -55,16 +55,24 @@ export function Dashboard({ user }: DashboardProps) {
             studio provides breathtaking ocean views that inspire tranquility and focus during every session.
           </p>
           <div className="mb-6 grid md:grid-cols-2 gap-4">
-            <img 
-              src="/IMG_5632.jpg" 
-              alt="Studio instructor in the Pilates studio"
-              className="w-full h-80 object-cover object-[center_25%] rounded-lg shadow-md"
-            />
-            <img 
-              src="/IMG_5810.jpg" 
-              alt="Instructor working with client in the studio"
-              className="w-full h-80 object-cover rounded-lg shadow-md"
-            />
+            <picture>
+              <source srcSet="/IMG_5632.webp" type="image/webp" />
+              <img
+                src="/IMG_5632.jpg"
+                alt="Studio instructor in the Pilates studio"
+                className="w-full h-80 object-cover object-[center_25%] rounded-lg shadow-md"
+                loading="lazy"
+              />
+            </picture>
+            <picture>
+              <source srcSet="/IMG_5810.webp" type="image/webp" />
+              <img
+                src="/IMG_5810.jpg"
+                alt="Instructor working with client in the studio"
+                className="w-full h-80 object-cover rounded-lg shadow-md"
+                loading="lazy"
+              />
+            </picture>
           </div>
           <div className="bg-blue-50 p-6 rounded-lg border border-blue-200 mb-4">
             <h3 className="font-semibold text-gray-800 mb-3">About Your Instructor</h3>
@@ -148,66 +156,90 @@ export function Dashboard({ user }: DashboardProps) {
           
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
             <div className="relative overflow-hidden rounded-lg">
-              <img 
-                src="/IMG_5919.jpg" 
-                alt="Ocean view from studio location"
-                className="w-full h-48 object-cover hover:scale-105 transition-transform duration-300"
-              />
+              <picture>
+                <source srcSet="/IMG_5919.webp" type="image/webp" />
+                <img
+                  src="/IMG_5919.jpg"
+                  alt="Ocean view from studio location"
+                  className="w-full h-48 object-cover hover:scale-105 transition-transform duration-300"
+                  loading="lazy"
+                />
+              </picture>
               <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-3">
                 <p className="text-white text-sm font-medium">Mat Sessions</p>
               </div>
             </div>
-            
+
             <div className="relative overflow-hidden rounded-lg">
-              <img
-                src="/IMG_8662 copy.png"
-                alt="Instructor working with client on tower"
-                className="w-full h-48 object-cover hover:scale-105 transition-transform duration-300"
-              />
+              <picture>
+                <source srcSet="/IMG_8662" type="image/webp" />
+                <img
+                  src="/IMG_8662 copy.png"
+                  alt="Instructor working with client on tower"
+                  className="w-full h-48 object-cover hover:scale-105 transition-transform duration-300"
+                  loading="lazy"
+                />
+              </picture>
               <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-3">
                 <p className="text-white text-sm font-medium">Tower Sessions</p>
               </div>
             </div>
 
             <div className="relative overflow-hidden rounded-lg">
-              <img
-                src="/IMG_8664 copy.png"
-                alt="Instructor guiding client through exercises"
-                className="w-full h-48 object-cover hover:scale-105 transition-transform duration-300"
-              />
+              <picture>
+                <source srcSet="/IMG_8664" type="image/webp" />
+                <img
+                  src="/IMG_8664 copy.png"
+                  alt="Instructor guiding client through exercises"
+                  className="w-full h-48 object-cover hover:scale-105 transition-transform duration-300"
+                  loading="lazy"
+                />
+              </picture>
               <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-3">
                 <p className="text-white text-sm font-medium">Reformer Sessions</p>
               </div>
             </div>
-            
+
             <div className="relative overflow-hidden rounded-lg">
-              <img
-                src="/FullSizeRender copy.png"
-                alt="Ocean view near the studio"
-                className="w-full h-48 object-cover hover:scale-105 transition-transform duration-300"
-              />
+              <picture>
+                <source srcSet="/FullSizeRender" type="image/webp" />
+                <img
+                  src="/FullSizeRender copy.png"
+                  alt="Ocean view near the studio"
+                  className="w-full h-48 object-cover hover:scale-105 transition-transform duration-300"
+                  loading="lazy"
+                />
+              </picture>
               <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-3">
                 <p className="text-white text-sm font-medium">Ocean Setting</p>
               </div>
             </div>
-            
+
             <div className="relative overflow-hidden rounded-lg">
-              <img
-                src="/IMG_5942 copy.png"
-                alt="Personal instruction session"
-                className="w-full h-48 object-cover hover:scale-105 transition-transform duration-300"
-              />
+              <picture>
+                <source srcSet="/IMG_5942" type="image/webp" />
+                <img
+                  src="/IMG_5942 copy.png"
+                  alt="Personal instruction session"
+                  className="w-full h-48 object-cover hover:scale-105 transition-transform duration-300"
+                  loading="lazy"
+                />
+              </picture>
               <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-3">
                 <p className="text-white text-sm font-medium">Personal Instruction</p>
               </div>
             </div>
-            
+
             <div className="relative overflow-hidden rounded-lg">
-              <img 
-                src="/outside.png" 
-                alt="Outside view of the studio"
-                className="w-full h-48 object-cover hover:scale-105 transition-transform duration-300"
-              />
+              <picture>
+                <source srcSet="/outside.webp" type="image/webp" />
+                <img
+                  src="/outside.png"
+                  alt="Outside view of the studio"
+                  className="w-full h-48 object-cover hover:scale-105 transition-transform duration-300"
+                  loading="lazy"
+                />
+              </picture>
               <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-3">
                 <p className="text-white text-sm font-medium">Studio Photo</p>
               </div>
