@@ -290,6 +290,11 @@ export function Dashboard({ user }: DashboardProps) {
               <li>• Late cancellation or no-show will be charged the full session fee</li>
               <li>• Payment is due at the time of booking or before session</li>
             </ul>
+
+            <h3 className="font-semibold text-gray-800 mb-4 mt-6">Pricing</h3>
+            <ul className="space-y-2 text-sm text-gray-600">
+              <li>• Private Lessons are $65 per 50 minute session</li>
+            </ul>
           </div>
 
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
