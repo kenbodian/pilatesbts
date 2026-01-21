@@ -3,8 +3,10 @@ import { AuthPage } from './components/AuthPage';
 import { WaiverForm } from './components/WaiverForm';
 import { Dashboard } from './components/Dashboard';
 import { AdminDashboard } from './components/AdminDashboard';
+import { ErrorBoundary } from './components/ErrorBoundary';
 import { useAuth } from './hooks/useAuth';
 import { supabase } from './lib/supabase';
+import { handleError, logError } from './utils/errorHandling';
 
 type AppState = 'auth' | 'waiver' | 'dashboard' | 'admin';
 
@@ -30,7 +32,9 @@ function App() {
           .maybeSingle();
 
         setIsAdmin(data?.role === 'admin' && !error);
-      } catch (error) {
+      } catch (error: unknown) {
+        const appError = handleError(error);
+        logError(appError, 'App.checkAdminStatus');
         setIsAdmin(false);
       } finally {
         setCheckingAdmin(false);
@@ -54,7 +58,9 @@ function App() {
           .maybeSingle();
 
         setHasWaiver(!!data && !error);
-      } catch (error) {
+      } catch (error: unknown) {
+        const appError = handleError(error);
+        logError(appError, 'App.checkWaiver');
         setHasWaiver(false);
       } finally {
         setCheckingWaiver(false);
@@ -95,23 +101,27 @@ function App() {
     );
   }
 
-  switch (appState) {
-    case 'auth':
-      return <AuthPage />;
-    case 'waiver':
-      return (
-        <WaiverForm
-          onComplete={handleWaiverComplete}
-          userEmail={user?.email || ''}
-        />
-      );
-    case 'admin':
-      return <AdminDashboard user={user} />;
-    case 'dashboard':
-      return <Dashboard user={user} />;
-    default:
-      return <AuthPage />;
-  }
+  const renderContent = () => {
+    switch (appState) {
+      case 'auth':
+        return <AuthPage />;
+      case 'waiver':
+        return (
+          <WaiverForm
+            onComplete={handleWaiverComplete}
+            userEmail={user?.email || ''}
+          />
+        );
+      case 'admin':
+        return <AdminDashboard user={user} />;
+      case 'dashboard':
+        return <Dashboard user={user} />;
+      default:
+        return <AuthPage />;
+    }
+  };
+
+  return <ErrorBoundary>{renderContent()}</ErrorBoundary>;
 }
 
 export default App;

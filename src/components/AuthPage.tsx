@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import { User, Mail, Lock, Waves } from 'lucide-react';
 import { supabase } from '../lib/supabase';
+import { handleError, logError, validatePassword } from '../utils/errorHandling';
+import { useToast } from '../hooks/useToast';
+import { ToastContainer } from './Toast';
 
 export function AuthPage() {
   const [isLogin, setIsLogin] = useState(true);
@@ -9,6 +12,7 @@ export function AuthPage() {
   const [fullName, setFullName] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const { toasts, removeToast, success, error: showError } = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -16,12 +20,30 @@ export function AuthPage() {
     setError('');
 
     try {
+      // Validate password strength on signup
+      if (!isLogin) {
+        const passwordValidation = validatePassword(password);
+        if (!passwordValidation.isValid) {
+          setError(passwordValidation.errors[0]);
+          setLoading(false);
+          return;
+        }
+
+        if (!fullName.trim()) {
+          setError('Please enter your full name');
+          setLoading(false);
+          return;
+        }
+      }
+
       if (isLogin) {
         const { error } = await supabase.auth.signInWithPassword({
           email,
           password,
         });
         if (error) throw error;
+
+        success('Successfully signed in!');
       } else {
         const { data, error } = await supabase.auth.signUp({
           email,
@@ -35,6 +57,9 @@ export function AuthPage() {
         if (error) throw error;
 
         if (data.user) {
+          success('Account created successfully! Please complete your waiver.');
+
+          // Try to send welcome email, but don't fail if it doesn't work
           try {
             const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
             const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
@@ -51,19 +76,25 @@ export function AuthPage() {
               }),
             });
           } catch (emailError) {
-            console.error('Failed to send welcome email:', emailError);
+            // Log but don't show error to user
+            console.warn('Failed to send welcome email:', emailError);
           }
         }
       }
-    } catch (error: any) {
-      setError(error.message);
+    } catch (error: unknown) {
+      const appError = handleError(error);
+      logError(appError, 'AuthPage.handleSubmit');
+      setError(appError.userMessage);
+      showError(appError.userMessage);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-teal-50 flex items-center justify-center p-4">
+    <>
+      <ToastContainer toasts={toasts} onClose={removeToast} />
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-teal-50 flex items-center justify-center p-4">
       <div
         className="absolute inset-0 opacity-5"
         style={{
@@ -181,5 +212,6 @@ export function AuthPage() {
         </div>
       </div>
     </div>
+    </>
   );
 }

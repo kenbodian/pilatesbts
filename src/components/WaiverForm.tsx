@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { FileText, Save, LogOut } from 'lucide-react';
 import { supabase } from '../lib/supabase';
+import { handleError, logError, isValidPhone, formatPhoneNumber } from '../utils/errorHandling';
+import { useToast } from '../hooks/useToast';
+import { ToastContainer } from './Toast';
 
 interface WaiverFormProps {
   onComplete: () => void;
@@ -32,6 +35,7 @@ export function WaiverForm({ onComplete, userEmail }: WaiverFormProps) {
   });
   const [loading, setLoading] = useState(false);
   const [existingForm, setExistingForm] = useState(false);
+  const { toasts, removeToast, success, error: showError } = useToast();
 
   useEffect(() => {
     loadExistingForm();
@@ -77,8 +81,10 @@ export function WaiverForm({ onComplete, userEmail }: WaiverFormProps) {
           agreed: true,
         });
       }
-    } catch (error) {
-      console.error('Error loading existing form:', error);
+    } catch (error: unknown) {
+      const appError = handleError(error);
+      logError(appError, 'WaiverForm.loadExistingForm');
+      showError('Failed to load existing waiver information');
     }
   };
 
@@ -87,18 +93,33 @@ export function WaiverForm({ onComplete, userEmail }: WaiverFormProps) {
     setLoading(true);
 
     try {
+      // Validate phone numbers
+      if (!isValidPhone(formData.phone)) {
+        showError('Please enter a valid phone number (10 digits)');
+        setLoading(false);
+        return;
+      }
+
+      if (!isValidPhone(formData.emergencyContactPhone)) {
+        showError('Please enter a valid emergency contact phone number (10 digits)');
+        setLoading(false);
+        return;
+      }
+
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('User not authenticated');
+      if (!user) {
+        throw new Error('You must be logged in to submit the waiver');
+      }
 
       const formPayload = {
         user_id: user.id,
         full_name: formData.fullName,
         email: formData.email,
-        phone: formData.phone,
+        phone: formatPhoneNumber(formData.phone),
         date_of_birth: formData.dateOfBirth,
         occupation: formData.occupation,
         emergency_contact_name: formData.emergencyContactName,
-        emergency_contact_phone: formData.emergencyContactPhone,
+        emergency_contact_phone: formatPhoneNumber(formData.emergencyContactPhone),
         emergency_contact_relationship: formData.emergencyContactRelationship,
         medical_conditions: formData.medicalConditions || null,
         previous_injuries: formData.previousInjuries || null,
@@ -121,17 +142,23 @@ export function WaiverForm({ onComplete, userEmail }: WaiverFormProps) {
           .eq('user_id', user.id);
 
         if (error) throw error;
+
+        success('Waiver updated successfully!');
       } else {
         const { error } = await supabase
           .from('waivers')
           .insert([formPayload]);
 
         if (error) throw error;
+
+        success('Waiver submitted successfully!');
       }
 
       onComplete();
-    } catch (error) {
-      console.error('Error saving waiver:', error);
+    } catch (error: unknown) {
+      const appError = handleError(error);
+      logError(appError, 'WaiverForm.handleSubmit');
+      showError(appError.userMessage);
     } finally {
       setLoading(false);
     }
@@ -146,7 +173,9 @@ export function WaiverForm({ onComplete, userEmail }: WaiverFormProps) {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8 px-4">
+    <>
+      <ToastContainer toasts={toasts} onClose={removeToast} />
+      <div className="min-h-screen bg-gray-50 py-8 px-4">
       <div className="max-w-4xl mx-auto">
         <div className="bg-white rounded-2xl shadow-lg p-8">
           <div className="relative">
@@ -525,5 +554,6 @@ export function WaiverForm({ onComplete, userEmail }: WaiverFormProps) {
         </div>
       </div>
     </div>
+    </>
   );
 }
