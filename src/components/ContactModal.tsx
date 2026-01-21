@@ -56,10 +56,19 @@ export function ContactModal({
         }),
       });
 
-      const data = await response.json();
+      const data = await response.json().catch(() => ({}));
 
       if (!response.ok || !data.success) {
-        throw new Error(data.error || 'Failed to send message');
+        // Provide more specific error message
+        let errorMsg = data.error || 'Failed to send message';
+
+        if (response.status === 500) {
+          errorMsg = 'Server error. Please check that environment variables (RESEND_API_KEY, ADMIN_EMAIL) are set in Supabase.';
+        } else if (response.status === 404) {
+          errorMsg = 'Contact service not found. Please ensure the Edge Function is deployed.';
+        }
+
+        throw new Error(errorMsg);
       }
 
       onSuccess('Message sent successfully! We\'ll get back to you soon.');
