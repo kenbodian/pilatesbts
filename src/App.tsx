@@ -14,83 +14,72 @@ function App() {
   const { user, loading } = useAuth();
   const [appState, setAppState] = useState<AppState>('auth');
   const [hasWaiver, setHasWaiver] = useState(false);
-  const [checkingWaiver, setCheckingWaiver] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
-  const [checkingAdmin, setCheckingAdmin] = useState(false);
+  const [checkingUserData, setCheckingUserData] = useState(false);
 
-  // Check if user is admin
+  // Combined user data check - runs both queries in parallel
   useEffect(() => {
-    const checkAdminStatus = async () => {
-      if (!user) return;
-
-      setCheckingAdmin(true);
-      try {
-        const { data, error } = await supabase
-          .from('user_roles')
-          .select('role')
-          .eq('user_id', user.id)
-          .maybeSingle();
-
-        setIsAdmin(data?.role === 'admin' && !error);
-      } catch (error: unknown) {
-        const appError = handleError(error);
-        logError(appError, 'App.checkAdminStatus');
+    const checkUserData = async () => {
+      if (!user) {
+        setAppState('auth');
         setIsAdmin(false);
-      } finally {
-        setCheckingAdmin(false);
+        setHasWaiver(false);
+        return;
       }
-    };
 
-    checkAdminStatus();
-  }, [user]);
+      setCheckingUserData(true);
 
-  // Check if user has completed waiver
-  useEffect(() => {
-    const checkWaiver = async () => {
-      if (!user || isAdmin) return; // Admins don't need waivers
-
-      setCheckingWaiver(true);
       try {
-        const { data, error } = await supabase
-          .from('waivers')
-          .select('id')
-          .eq('user_id', user.id)
-          .maybeSingle();
+        // Run both queries in parallel for better performance
+        const [adminResult, waiverResult] = await Promise.all([
+          supabase
+            .from('user_roles')
+            .select('role')
+            .eq('user_id', user.id)
+            .maybeSingle(),
+          supabase
+            .from('waivers')
+            .select('id')
+            .eq('user_id', user.id)
+            .maybeSingle(),
+        ]);
 
-        setHasWaiver(!!data && !error);
+        // Check admin status
+        const adminStatus = adminResult.data?.role === 'admin' && !adminResult.error;
+        setIsAdmin(adminStatus);
+
+        // Check waiver status (admins don't need waivers)
+        const waiverStatus = !!waiverResult.data && !waiverResult.error;
+        setHasWaiver(waiverStatus);
+
+        // Determine app state
+        if (adminStatus) {
+          setAppState('admin');
+        } else if (!waiverStatus) {
+          setAppState('waiver');
+        } else {
+          setAppState('dashboard');
+        }
       } catch (error: unknown) {
         const appError = handleError(error);
-        logError(appError, 'App.checkWaiver');
+        logError(appError, 'App.checkUserData');
+        setIsAdmin(false);
         setHasWaiver(false);
+        setAppState('auth');
       } finally {
-        setCheckingWaiver(false);
+        setCheckingUserData(false);
       }
     };
 
-    checkWaiver();
-  }, [user, isAdmin]);
-
-  // Handle app state transitions
-  useEffect(() => {
-    if (loading || checkingWaiver || checkingAdmin) return;
-
-    if (!user) {
-      setAppState('auth');
-    } else if (isAdmin) {
-      setAppState('admin');
-    } else if (!hasWaiver) {
-      setAppState('waiver');
-    } else {
-      setAppState('dashboard');
-    }
-  }, [user, hasWaiver, isAdmin, loading, checkingWaiver, checkingAdmin]);
+    checkUserData();
+  }, [user]);
 
   const handleWaiverComplete = () => {
     setHasWaiver(true);
     setAppState('dashboard');
   };
 
-  if (loading || checkingWaiver || checkingAdmin) {
+  if (loading || checkingUserData) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-teal-50 flex items-center justify-center">
         <div className="text-center">
