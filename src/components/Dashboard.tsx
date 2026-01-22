@@ -4,6 +4,7 @@ import { supabase } from '../lib/supabase';
 import { ContactModal } from './ContactModal';
 import { useToast } from '../hooks/useToast';
 import { ToastContainer } from './Toast';
+import { BUSINESS_INFO, getPhoneLink, getEmailLink } from '../config/business';
 
 interface DashboardProps {
   user: any;
@@ -37,7 +38,7 @@ export function Dashboard({ user }: DashboardProps) {
               <Waves className="w-6 h-6 text-white" />
             </div>
             <div>
-              <h1 className="text-xl font-light text-gray-800">Pilates by the Sea</h1>
+              <h1 className="text-xl font-light text-gray-800">{BUSINESS_INFO.name}</h1>
               <p className="text-sm text-gray-600">Welcome, {user?.user_metadata?.full_name || user?.email}</p>
             </div>
           </div>
@@ -287,7 +288,7 @@ export function Dashboard({ user }: DashboardProps) {
             </p>
             <div className="mt-4">
               <a
-                href="https://calendar.app.google/5R2natLo42evouFj6"
+                href={BUSINESS_INFO.links.calendar}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-600 to-teal-600 text-white text-sm font-medium rounded-lg hover:from-blue-700 hover:to-teal-700 transition-colors"
@@ -306,13 +307,13 @@ export function Dashboard({ user }: DashboardProps) {
               <h3 className="font-semibold text-gray-800">Studio Location</h3>
             </div>
             <p className="text-gray-600 text-sm leading-relaxed">
-              140 Via Madrid Drive<br />
-              Ormond Beach, FL 32176<br />
+              {BUSINESS_INFO.address.street}<br />
+              {BUSINESS_INFO.address.city}, {BUSINESS_INFO.address.state} {BUSINESS_INFO.address.zip}<br />
               Beautiful Florida Coast
             </p>
             <div className="mt-4">
               <a
-                href="https://www.google.com/maps/search/?api=1&query=140+Via+Madrid+Drive,+Ormond+Beach,+FL+32176"
+                href={BUSINESS_INFO.links.googleMaps}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors"
@@ -331,8 +332,8 @@ export function Dashboard({ user }: DashboardProps) {
               <h3 className="font-semibold text-gray-800">Contact & Email</h3>
             </div>
             <p className="text-gray-600 text-sm leading-relaxed mb-4">
-              Phone: (386) 387-1738<br />
-              pilatesbts@gmail.com
+              Phone: <a href={getPhoneLink(BUSINESS_INFO.phone)} className="hover:text-green-700">{BUSINESS_INFO.phone}</a><br />
+              <a href={getEmailLink(BUSINESS_INFO.email)} className="hover:text-green-700">{BUSINESS_INFO.email}</a>
             </p>
             <div className="mt-4">
               <button
@@ -360,7 +361,7 @@ export function Dashboard({ user }: DashboardProps) {
 
             <h3 className="font-semibold text-gray-800 mb-4 mt-6">Pricing</h3>
             <ul className="space-y-2 text-sm text-gray-600">
-              <li>• Private Lessons are $65 per 50 minute session</li>
+              <li>• Private Lessons are ${BUSINESS_INFO.pricing.privateLesson.price} per {BUSINESS_INFO.pricing.privateLesson.duration} {BUSINESS_INFO.pricing.privateLesson.unit} session</li>
             </ul>
           </div>
 

@@ -1,5 +1,6 @@
 import React, { Component, ErrorInfo, ReactNode } from 'react';
 import { AlertTriangle, RefreshCw, Home } from 'lucide-react';
+import { BUSINESS_INFO, getEmailLink } from '../config/business';
 
 interface Props {
   children: ReactNode;
@@ -126,10 +127,10 @@ export class ErrorBoundary extends Component<Props, State> {
               <p className="text-sm text-gray-500">
                 If this problem persists, please contact us at{' '}
                 <a
-                  href="mailto:pilatesbts@gmail.com"
+                  href={getEmailLink(BUSINESS_INFO.email)}
                   className="text-blue-600 hover:text-blue-800 underline"
                 >
-                  pilatesbts@gmail.com
+                  {BUSINESS_INFO.email}
                 </a>
               </p>
             </div>
