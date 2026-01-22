@@ -56,28 +56,30 @@ export function AuthPage() {
         });
         if (error) throw error;
 
-        if (data.user) {
+        if (data.user && data.session) {
           success('Account created successfully! Please complete your waiver.');
 
-          // Try to send welcome email, but don't fail if it doesn't work
+          // Send welcome email using the user's session token
+          // This runs asynchronously and won't block the signup flow
           try {
             const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-            const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-            await fetch(`${supabaseUrl}/functions/v1/send-signup-emails`, {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${supabaseKey}`,
-              },
-              body: JSON.stringify({
-                userEmail: email,
-                userName: fullName,
-              }),
-            });
+            if (supabaseUrl) {
+              await fetch(`${supabaseUrl}/functions/v1/send-signup-emails`, {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Authorization': `Bearer ${data.session.access_token}`,
+                },
+                body: JSON.stringify({
+                  userEmail: email,
+                  userName: fullName,
+                }),
+              });
+            }
           } catch (emailError) {
-            // Log but don't show error to user
-            console.warn('Failed to send welcome email:', emailError);
+            // Email sending is optional - don't block signup if it fails
+            console.warn('Welcome email could not be sent:', emailError);
           }
         }
       }
