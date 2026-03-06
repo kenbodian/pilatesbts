@@ -12,8 +12,11 @@ jobs:
     steps:
       - name: Ping Supabase REST API
         run: |
+          # Query a specific table with limit=1 instead of the root /rest/v1/ endpoint.
+          # Supabase is removing anon key access to the root endpoint on April 8, 2026.
+          # See: https://github.com/orgs/supabase/discussions/42949
           response=$(curl -s -o /dev/null -w "%{http_code}" \
-            "${{ secrets.SUPABASE_URL }}/rest/v1/" \
+            "${{ secrets.SUPABASE_URL }}/rest/v1/waivers?select=id&limit=1" \
             -H "apikey: ${{ secrets.SUPABASE_ANON_KEY }}" \
             -H "Authorization: Bearer ${{ secrets.SUPABASE_ANON_KEY }}")
 
