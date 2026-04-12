@@ -1,13 +1,18 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import {
-  ArrowLeft, ChevronDown, ChevronUp, Clock, MessageSquare, X, Check, AlertTriangle
+  ArrowLeft, ChevronDown, ChevronUp, MessageSquare, X, AlertTriangle,
+  Play, History, Map, Download,
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import type {
   InstructorClient, Exercise, ClientExerciseStatus,
-  ExerciseStatus, Apparatus,
+  ExerciseStatus, Apparatus, Session,
 } from '../types/clientCards';
 import { APPARATUS_LABELS, APPARATUS_ORDER } from '../types/clientCards';
+import { SessionView } from './SessionView';
+import { SessionHistory } from './SessionHistory';
+import { CurriculumMap } from './CurriculumMap';
+import { exportClientCardPDF } from '../utils/exportClientPDF';
 
 // ─── Status cycling ────────────────────────────────────────────────────────────
 const STATUS_CYCLE: ExerciseStatus[] = ['not_started', 'introduced', 'developing', 'mastered'];
@@ -334,18 +339,22 @@ function ClientInfoHeader({ client, onUpdateClient }: ClientInfoHeaderProps) {
 }
 
 // ─── Main ClientCard component ────────────────────────────────────────────────
+type CardView = 'card' | 'session' | 'history' | 'map';
+
 interface ClientCardProps {
   client: InstructorClient;
+  instructorId: string;
   onBack: () => void;
 }
 
-export function ClientCard({ client: initialClient, onBack }: ClientCardProps) {
+export function ClientCard({ client: initialClient, instructorId, onBack }: ClientCardProps) {
   const [client, setClient] = useState(initialClient);
   const [exercises, setExercises] = useState<Record<Apparatus, Exercise[]>>({} as Record<Apparatus, Exercise[]>);
   const [statusMap, setStatusMap] = useState<Record<string, ClientExerciseStatus>>({});
   const [loading, setLoading] = useState(true);
   const [savingIds, setSavingIds] = useState<Set<string>>(new Set());
   const [activeApparatus, setActiveApparatus] = useState<Apparatus | 'all'>('all');
+  const [view, setView] = useState<CardView>('card');
 
   useEffect(() => {
     loadData();
@@ -504,6 +513,35 @@ export function ClientCard({ client: initialClient, onBack }: ClientCardProps) {
     );
   }
 
+  // ── Session view ──
+  if (view === 'session') {
+    return (
+      <SessionView
+        client={client}
+        exercises={exercises}
+        statusMap={statusMap}
+        instructorId={instructorId}
+        onSessionSaved={(_session: Session, updatedMap) => {
+          setStatusMap(updatedMap);
+          setView('card');
+        }}
+        onDiscard={() => setView('card')}
+      />
+    );
+  }
+
+  // ── Curriculum map view ──
+  if (view === 'map') {
+    return (
+      <CurriculumMap
+        client={client}
+        exercises={exercises}
+        statusMap={statusMap}
+        onBack={() => setView('card')}
+      />
+    );
+  }
+
   return (
     <div>
       {/* Back + name */}
@@ -520,6 +558,52 @@ export function ClientCard({ client: initialClient, onBack }: ClientCardProps) {
           </h2>
         </div>
       </div>
+
+      {/* Action bar */}
+      <div className="flex space-x-2 mb-4">
+        <button
+          onClick={() => setView('session')}
+          className="flex-1 flex items-center justify-center space-x-2 px-4 py-2.5 bg-teal-600 text-white rounded-lg text-sm font-medium hover:bg-teal-700 transition-colors"
+        >
+          <Play className="w-4 h-4" />
+          <span>Start Session</span>
+        </button>
+        <button
+          onClick={() => setView('map')}
+          className="flex items-center justify-center space-x-1.5 px-3 py-2.5 bg-gray-100 text-gray-600 rounded-lg text-sm font-medium hover:bg-gray-200 transition-colors"
+          title="Curriculum Map"
+        >
+          <Map className="w-4 h-4" />
+          <span className="hidden sm:inline">Map</span>
+        </button>
+        <button
+          onClick={() => setView(view === 'history' ? 'card' : 'history')}
+          className={`flex items-center justify-center space-x-1.5 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+            view === 'history'
+              ? 'bg-blue-100 text-blue-700'
+              : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+          }`}
+          title="Session History"
+        >
+          <History className="w-4 h-4" />
+          <span className="hidden sm:inline">History</span>
+        </button>
+        <button
+          onClick={() => exportClientCardPDF(client, exercises, statusMap)}
+          className="flex items-center justify-center px-3 py-2.5 bg-gray-100 text-gray-600 rounded-lg hover:bg-gray-200 transition-colors"
+          title="Export PDF"
+        >
+          <Download className="w-4 h-4" />
+        </button>
+      </div>
+
+      {/* Session history panel */}
+      {view === 'history' && (
+        <div className="mb-4">
+          <h3 className="text-sm font-semibold text-gray-600 mb-3">Session History</h3>
+          <SessionHistory clientId={client.id} />
+        </div>
+      )}
 
       {/* Stats row */}
       <div className="grid grid-cols-3 gap-3 mb-4">

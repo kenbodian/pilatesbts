@@ -75,6 +75,24 @@ export interface ClientExerciseStatus {
   last_practiced_at: string | null;
 }
 
+export interface Session {
+  id: string;
+  client_id: string;
+  instructor_id: string | null;
+  session_date: string;
+  duration_minutes: number | null;
+  notes: string | null;
+  created_at: string;
+}
+
+export interface SessionExercise {
+  id: string;
+  session_id: string;
+  exercise_id: string;
+  completed: boolean;
+  notes: string | null;
+}
+
 // Combined view: exercise + its status for a specific client
 export interface ExerciseWithStatus extends Exercise {
   statusRecord: ClientExerciseStatus | null;

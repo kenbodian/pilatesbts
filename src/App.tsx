@@ -4,6 +4,7 @@ import { WaiverForm } from './components/WaiverForm';
 import { Dashboard } from './components/Dashboard';
 import { AdminDashboard } from './components/AdminDashboard';
 import { ErrorBoundary } from './components/ErrorBoundary';
+import { InstallBanner } from './components/InstallBanner';
 import { useAuth } from './hooks/useAuth';
 import { supabase } from './lib/supabase';
 import { handleError, logError } from './utils/errorHandling';
@@ -110,7 +111,12 @@ function App() {
     }
   };
 
-  return <ErrorBoundary>{renderContent()}</ErrorBoundary>;
+  return (
+    <ErrorBoundary>
+      {renderContent()}
+      <InstallBanner />
+    </ErrorBoundary>
+  );
 }
 
 export default App;

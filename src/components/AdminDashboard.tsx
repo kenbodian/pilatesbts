@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Shield, Users, FileText, LogOut, Waves, Download, Calendar, CreditCard } from 'lucide-react';
+import { Shield, FileText, LogOut, Download, Calendar, CreditCard, AlertTriangle } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { ClientRoster } from './ClientRoster';
 import { ClientCard } from './ClientCard';
 import { AddClientModal } from './AddClientModal';
+import { DueForReview } from './DueForReview';
 import type { InstructorClient } from '../types/clientCards';
 
 interface AdminDashboardProps {
@@ -34,7 +35,7 @@ interface Waiver {
   signed_at: string;
 }
 
-type Tab = 'cards' | 'waivers';
+type Tab = 'cards' | 'review' | 'waivers';
 
 export function AdminDashboard({ user }: AdminDashboardProps) {
   const [activeTab, setActiveTab] = useState<Tab>('cards');
@@ -136,6 +137,17 @@ export function AdminDashboard({ user }: AdminDashboardProps) {
               <span>Client Cards</span>
             </button>
             <button
+              onClick={() => setActiveTab('review')}
+              className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
+                activeTab === 'review'
+                  ? 'bg-white text-amber-700 shadow-sm'
+                  : 'text-gray-500 hover:text-gray-700'
+              }`}
+            >
+              <AlertTriangle className="w-4 h-4" />
+              <span className="hidden sm:inline">Review</span>
+            </button>
+            <button
               onClick={() => setActiveTab('waivers')}
               className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
                 activeTab === 'waivers'
@@ -144,7 +156,7 @@ export function AdminDashboard({ user }: AdminDashboardProps) {
               }`}
             >
               <FileText className="w-4 h-4" />
-              <span>Waivers</span>
+              <span className="hidden sm:inline">Waivers</span>
             </button>
           </div>
 
@@ -166,6 +178,7 @@ export function AdminDashboard({ user }: AdminDashboardProps) {
             {selectedClient ? (
               <ClientCard
                 client={selectedClient}
+                instructorId={user?.id}
                 onBack={() => setSelectedClient(null)}
               />
             ) : (
@@ -188,6 +201,22 @@ export function AdminDashboard({ user }: AdminDashboardProps) {
               />
             )}
           </>
+        )}
+
+        {/* ── DUE FOR REVIEW TAB ── */}
+        {activeTab === 'review' && (
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
+            <div className="flex items-center space-x-2 mb-5">
+              <AlertTriangle className="w-5 h-5 text-amber-500" />
+              <h3 className="text-lg font-semibold text-gray-800">Due for Review</h3>
+            </div>
+            <DueForReview
+              onSelectClient={client => {
+                setSelectedClient(client);
+                setActiveTab('cards');
+              }}
+            />
+          </div>
         )}
 
         {/* ── WAIVERS TAB ── */}
