@@ -39,8 +39,10 @@ export default defineConfig({
         ],
       },
       workbox: {
-        // Cache the app shell and static assets
-        globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
+        // Cache the app shell and static assets — exclude large images (>500 KB)
+        globPatterns: ['**/*.{js,css,html,ico,svg,woff2}', '**/*.png'],
+        globIgnores: ['**/IMG_*.png', '**/img_*.png'],
+        maximumFileSizeToCacheInBytes: 3 * 1024 * 1024, // 3 MiB safety net
         // Cache Supabase API responses for offline browsing
         runtimeCaching: [
           {
