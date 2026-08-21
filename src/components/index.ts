@@ -1,5 +1,7 @@
 // Component exports for easier imports
 export { AuthPage } from './AuthPage';
+export { PublicHomePage } from './PublicHomePage';
+export { StudioContent } from './StudioContent';
 export { Dashboard } from './Dashboard';
 export { WaiverForm } from './WaiverForm';
 export { AdminDashboard } from './AdminDashboard';
