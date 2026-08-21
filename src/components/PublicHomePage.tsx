@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Calendar, Waves } from 'lucide-react';
+import { Waves } from 'lucide-react';
 import { StudioContent } from './StudioContent';
 import { BUSINESS_INFO, getPhoneLink, getEmailLink } from '../config/business';
 
@@ -17,33 +17,22 @@ export function PublicHomePage() {
               <p className="text-sm text-gray-600 hidden sm:block">Ormond Beach, Florida</p>
             </div>
           </div>
-          <div className="flex items-center space-x-2 flex-shrink-0">
-            <a
-              href={BUSINESS_INFO.links.calendar}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-600 to-teal-600 text-white text-sm font-medium rounded-lg hover:from-blue-700 hover:to-teal-700 transition-colors"
-            >
-              <Calendar className="w-4 h-4 mr-2" />
-              Book
-            </a>
-            <Link
-              to="/login"
-              className="px-4 py-2 text-sm text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
-            >
-              Sign In
-            </Link>
-          </div>
+          <Link
+            to="/login"
+            className="px-4 py-2 text-sm text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors flex-shrink-0"
+          >
+            Sign In
+          </Link>
         </div>
       </header>
 
       <section className="relative">
         <picture>
-          <source srcSet="/IMG_5632.webp" type="image/webp" />
+          <source srcSet="/outside.webp" type="image/webp" />
           <img
-            src="/IMG_5632.jpg"
-            alt="Classical Pilates instruction at Pilates by the Sea"
-            className="w-full h-[420px] object-cover object-[center_25%]"
+            src="/outside.png"
+            alt="Pilates by the Sea studio on the Florida coast"
+            className="w-full h-[420px] object-cover object-center"
           />
         </picture>
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-black/10" />
@@ -54,30 +43,20 @@ export function PublicHomePage() {
             </h1>
             <p className="text-base md:text-lg text-white/90 max-w-2xl mb-6">
               Private classical Pilates with Noël Bethea — 700-hour comprehensive certification —
-              in an intimate coastal studio in Ormond Beach.
+              in an intimate coastal studio in Ormond Beach. New clients are welcome by inquiry.
             </p>
-            <div className="flex flex-wrap gap-3">
-              <a
-                href={BUSINESS_INFO.links.calendar}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center px-5 py-2.5 bg-white text-teal-800 text-sm font-medium rounded-lg hover:bg-teal-50 transition-colors"
-              >
-                Book a private session — ${BUSINESS_INFO.pricing.privateLesson.price} / {BUSINESS_INFO.pricing.privateLesson.duration} min
-              </a>
-              <a
-                href={getPhoneLink(BUSINESS_INFO.phone)}
-                className="inline-flex items-center px-5 py-2.5 bg-white/10 border border-white/40 text-white text-sm font-medium rounded-lg hover:bg-white/20 transition-colors"
-              >
-                {BUSINESS_INFO.phone}
-              </a>
-            </div>
+            <a
+              href={getPhoneLink(BUSINESS_INFO.phone)}
+              className="inline-flex items-center px-5 py-2.5 bg-white text-teal-800 text-sm font-medium rounded-lg hover:bg-teal-50 transition-colors"
+            >
+              {BUSINESS_INFO.phone}
+            </a>
           </div>
         </div>
       </section>
 
       <div className="max-w-6xl mx-auto px-4 py-8">
-        <StudioContent />
+        <StudioContent showBooking={false} />
       </div>
 
       <footer className="border-t border-gray-200 bg-white mt-4">
