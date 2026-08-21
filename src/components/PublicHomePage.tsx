@@ -27,14 +27,11 @@ export function PublicHomePage() {
       </header>
 
       <section className="relative">
-        <picture>
-          <source srcSet="/outside.webp" type="image/webp" />
-          <img
-            src="/outside.png"
-            alt="Pilates by the Sea studio on the Florida coast"
-            className="w-full h-[420px] object-cover object-center"
-          />
-        </picture>
+        <img
+          src="/hero-beach.jpg"
+          alt="Calm tropical shoreline at sunrise"
+          className="w-full h-[420px] object-cover object-center"
+        />
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-black/10" />
         <div className="absolute inset-0 flex items-end">
           <div className="max-w-6xl mx-auto px-4 pb-10 w-full text-white">
