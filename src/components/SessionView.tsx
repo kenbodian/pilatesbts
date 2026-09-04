@@ -39,32 +39,32 @@ function SessionRow({ exercise, statusRecord, checked, onToggle }: SessionRowPro
   const springs = statusRecord?.custom_springs ?? exercise.springs;
 
   const statusDot: Record<ExerciseStatus, string> = {
-    not_started: 'bg-gray-200',
+    not_started: 'bg-line',
     introduced:  'bg-amber-400',
-    developing:  'bg-blue-400',
-    mastered:    'bg-green-400',
+    developing:  'bg-sea',
+    mastered:    'bg-sea',
   };
 
   return (
     <button
       onClick={onToggle}
-      className={`w-full flex items-center space-x-3 py-3 px-3 rounded-lg transition-all text-left ${
+      className={`w-full flex items-center space-x-3 py-3 px-3 rounded transition-colors text-left ${
         checked
-          ? 'bg-teal-50 border border-teal-200'
-          : 'hover:bg-gray-50 border border-transparent'
+          ? 'bg-sea-tint border border-line'
+          : 'hover:bg-foam border border-transparent'
       }`}
     >
       {checked
-        ? <CheckCircle2 className="w-5 h-5 text-teal-500 flex-shrink-0" />
-        : <Circle className="w-5 h-5 text-gray-300 flex-shrink-0" />
+        ? <CheckCircle2 className="w-5 h-5 text-sea flex-shrink-0" />
+        : <Circle className="w-5 h-5 text-line flex-shrink-0" />
       }
 
-      <span className={`flex-1 text-sm ${checked ? 'text-teal-700 font-medium' : 'text-gray-700'}`}>
+      <span className={`flex-1 text-sm ${checked ? 'text-sea-deep font-medium' : 'text-ink-2'}`}>
         {exercise.name}
       </span>
 
       {springs && (
-        <span className="text-xs text-gray-400 font-mono flex-shrink-0">{springs}</span>
+        <span className="text-xs text-ink-3 font-mono flex-shrink-0">{springs}</span>
       )}
 
       <span className={`w-2 h-2 rounded-full flex-shrink-0 ${statusDot[status]}`} title={status} />
@@ -89,19 +89,19 @@ function SessionSection({ apparatus, exercises, statusMap, checkedIds, onToggle 
     <div className="mb-3">
       <button
         onClick={() => setCollapsed(c => !c)}
-        className="w-full flex items-center justify-between px-3 py-2 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+        className="w-full flex items-center justify-between px-3 py-2 bg-sand rounded hover:bg-line transition-colors"
       >
         <div className="flex items-center space-x-2">
-          <span className="font-semibold text-gray-700 text-sm">{APPARATUS_LABELS[apparatus]}</span>
-          <span className="text-xs text-gray-400">{exercises.length}</span>
+          <span className="font-semibold text-ink-2 text-sm">{APPARATUS_LABELS[apparatus]}</span>
+          <span className="text-xs text-ink-3">{exercises.length}</span>
         </div>
         <div className="flex items-center space-x-2">
           {checkedCount > 0 && (
-            <span className="text-xs bg-teal-100 text-teal-700 px-2 py-0.5 rounded-full font-medium">
+            <span className="text-xs bg-sea-tint text-sea-deep px-2 py-0.5 rounded-full font-medium">
               {checkedCount} done
             </span>
           )}
-          {collapsed ? <ChevronDown className="w-3.5 h-3.5 text-gray-400" /> : <ChevronUp className="w-3.5 h-3.5 text-gray-400" />}
+          {collapsed ? <ChevronDown className="w-3.5 h-3.5 text-ink-3" /> : <ChevronUp className="w-3.5 h-3.5 text-ink-3" />}
         </div>
       </button>
 
@@ -135,17 +135,17 @@ interface EndSessionModalProps {
 function EndSessionModal({ checkedCount, sessionNotes, onNotesChange, onConfirm, onCancel, saving }: EndSessionModalProps) {
   return (
     <div className="fixed inset-0 bg-black/40 flex items-end sm:items-center justify-center z-50 p-0 sm:p-4">
-      <div className="bg-white w-full sm:max-w-md rounded-t-2xl sm:rounded-2xl shadow-xl">
+      <div className="bg-white w-full sm:max-w-md rounded-t-lg sm:rounded-lg shadow-xl">
         <div className="px-5 pt-5 pb-2">
-          <h3 className="font-semibold text-gray-800 text-lg">End Session</h3>
-          <p className="text-sm text-gray-500 mt-1">
+          <h3 className="font-semibold text-ink text-lg">End Session</h3>
+          <p className="text-sm text-ink-3 mt-1">
             {checkedCount} exercise{checkedCount !== 1 ? 's' : ''} completed this session.
           </p>
         </div>
         <div className="px-5 pb-3">
-          <label className="block text-xs font-medium text-gray-500 mb-1.5">Session notes (optional)</label>
+          <label className="block text-xs font-medium text-ink-3 mb-1.5">Session notes (optional)</label>
           <textarea
-            className="w-full border border-gray-200 rounded-lg p-3 text-sm text-gray-700 resize-none focus:outline-none focus:ring-2 focus:ring-teal-400 focus:border-transparent"
+            className="w-full border border-line rounded p-3 text-sm text-ink-2 resize-none focus:outline-none focus:ring-2 focus:ring-sea focus:border-transparent"
             rows={3}
             placeholder="How did it go? What to focus on next time…"
             value={sessionNotes}
@@ -156,14 +156,14 @@ function EndSessionModal({ checkedCount, sessionNotes, onNotesChange, onConfirm,
         <div className="px-5 pb-5 flex space-x-3">
           <button
             onClick={onCancel}
-            className="flex-1 px-4 py-2.5 border border-gray-200 rounded-lg text-sm text-gray-600 hover:bg-gray-50 font-medium"
+            className="flex-1 px-4 py-2.5 border border-line rounded text-sm text-ink-2 hover:bg-foam font-medium"
           >
             Keep going
           </button>
           <button
             onClick={onConfirm}
             disabled={saving}
-            className="flex-1 px-4 py-2.5 bg-teal-600 text-white rounded-lg text-sm font-medium hover:bg-teal-700 disabled:opacity-60"
+            className="flex-1 px-4 py-2.5 bg-sea text-white rounded text-sm font-medium hover:bg-sea-deep disabled:opacity-60"
           >
             {saving ? 'Saving…' : 'Save & Finish'}
           </button>
@@ -288,20 +288,20 @@ export function SessionView({
   return (
     <div className="pb-24">
       {/* Header */}
-      <div className="sticky top-0 bg-white border-b border-gray-100 z-20 px-0 py-3 -mx-4 px-4">
+      <div className="sticky top-0 bg-white border-b border-sand z-20 px-0 py-3 -mx-4 px-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
             <button
               onClick={onDiscard}
-              className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+              className="p-2 text-ink-3 hover:text-ink-2 hover:bg-sand rounded transition-colors"
             >
               <ArrowLeft className="w-5 h-5" />
             </button>
             <div>
-              <p className="font-semibold text-gray-800 text-sm leading-none">
+              <p className="font-semibold text-ink text-sm leading-none">
                 {client.first_name} {client.last_name}
               </p>
-              <p className="text-xs text-gray-400 mt-0.5">
+              <p className="text-xs text-ink-3 mt-0.5">
                 {new Date().toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
               </p>
             </div>
@@ -311,9 +311,9 @@ export function SessionView({
             {/* Timer */}
             <button
               onClick={timer.toggle}
-              className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-sm font-mono transition-colors ${
+              className={`flex items-center space-x-1.5 px-3 py-1.5 rounded text-sm font-mono transition-colors ${
                 timer.running
-                  ? 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  ? 'bg-sand text-ink-2 hover:bg-line'
                   : 'bg-amber-100 text-amber-700'
               }`}
             >
@@ -324,7 +324,7 @@ export function SessionView({
             {/* End session */}
             <button
               onClick={() => setShowEndModal(true)}
-              className="flex items-center space-x-1.5 px-3 py-1.5 bg-teal-600 text-white rounded-lg text-sm font-medium hover:bg-teal-700 transition-colors"
+              className="flex items-center space-x-1.5 px-3 py-1.5 bg-sea text-white rounded text-sm font-medium hover:bg-sea-deep transition-colors"
             >
               <StopCircle className="w-3.5 h-3.5" />
               <span>End</span>
@@ -335,19 +335,19 @@ export function SessionView({
         {/* Progress bar */}
         {totalChecked > 0 && (
           <div className="mt-2.5 flex items-center space-x-2">
-            <div className="flex-1 h-1.5 bg-gray-100 rounded-full overflow-hidden">
+            <div className="flex-1 h-1.5 bg-sand rounded-full overflow-hidden">
               <div
-                className="h-full bg-teal-500 rounded-full transition-all duration-300"
+                className="h-full bg-sea rounded-full transition-colors duration-300"
                 style={{ width: `${Math.min(100, (totalChecked / Math.max(1, Object.values(exercises).flat().length)) * 100)}%` }}
               />
             </div>
-            <span className="text-xs text-teal-600 font-medium flex-shrink-0">{totalChecked} done</span>
+            <span className="text-xs text-sea font-medium flex-shrink-0">{totalChecked} done</span>
           </div>
         )}
       </div>
 
       {/* Instructions */}
-      <p className="text-xs text-gray-400 mt-4 mb-3 px-1">
+      <p className="text-xs text-ink-3 mt-4 mb-3 px-1">
         Tap each exercise as you complete it. Status dot shows current level.
       </p>
 

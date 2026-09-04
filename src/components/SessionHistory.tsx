@@ -63,14 +63,14 @@ export function SessionHistory({ clientId }: SessionHistoryProps) {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-8">
-        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-teal-600" />
+        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-sea" />
       </div>
     );
   }
 
   if (sessions.length === 0) {
     return (
-      <p className="text-sm text-gray-400 text-center py-6 italic">
+      <p className="text-sm text-ink-3 text-center py-6 italic">
         No sessions recorded yet. Tap "Start Session" to log your first session.
       </p>
     );
@@ -83,23 +83,23 @@ export function SessionHistory({ clientId }: SessionHistoryProps) {
         const isExpanded = expandedId === session.id;
 
         return (
-          <div key={session.id} className="border border-gray-200 rounded-xl overflow-hidden">
+          <div key={session.id} className="border border-line rounded-lg overflow-hidden">
             <button
               onClick={() => setExpandedId(isExpanded ? null : session.id)}
-              className="w-full flex items-center justify-between px-4 py-3 hover:bg-gray-50 transition-colors text-left"
+              className="w-full flex items-center justify-between px-4 py-3 hover:bg-foam transition-colors text-left"
             >
               <div className="flex items-center space-x-3">
-                <div className="w-8 h-8 bg-teal-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <Calendar className="w-4 h-4 text-teal-600" />
+                <div className="w-8 h-8 bg-sea-tint rounded flex items-center justify-center flex-shrink-0">
+                  <Calendar className="w-4 h-4 text-sea" />
                 </div>
                 <div>
-                  <p className="font-medium text-gray-800 text-sm">{formatDate(session.session_date)}</p>
+                  <p className="font-medium text-ink text-sm">{formatDate(session.session_date)}</p>
                   <div className="flex items-center space-x-2 mt-0.5">
-                    <span className="text-xs text-teal-600 font-medium">{completedCount} exercises</span>
+                    <span className="text-xs text-sea font-medium">{completedCount} exercises</span>
                     {session.duration_minutes != null && session.duration_minutes > 0 && (
                       <>
-                        <span className="text-xs text-gray-300">·</span>
-                        <span className="text-xs text-gray-400 flex items-center space-x-0.5">
+                        <span className="text-xs text-line">·</span>
+                        <span className="text-xs text-ink-3 flex items-center space-x-0.5">
                           <Clock className="w-3 h-3" />
                           <span>{session.duration_minutes} min</span>
                         </span>
@@ -109,15 +109,15 @@ export function SessionHistory({ clientId }: SessionHistoryProps) {
                 </div>
               </div>
               {isExpanded
-                ? <ChevronUp className="w-4 h-4 text-gray-400 flex-shrink-0" />
-                : <ChevronDown className="w-4 h-4 text-gray-400 flex-shrink-0" />
+                ? <ChevronUp className="w-4 h-4 text-ink-3 flex-shrink-0" />
+                : <ChevronDown className="w-4 h-4 text-ink-3 flex-shrink-0" />
               }
             </button>
 
             {isExpanded && (
-              <div className="border-t border-gray-100 px-4 py-3 bg-gray-50">
+              <div className="border-t border-sand px-4 py-3 bg-foam">
                 {session.notes && (
-                  <p className="text-sm text-gray-600 italic mb-3 pb-3 border-b border-gray-200">
+                  <p className="text-sm text-ink-2 italic mb-3 pb-3 border-b border-line">
                     "{session.notes}"
                   </p>
                 )}
@@ -125,16 +125,16 @@ export function SessionHistory({ clientId }: SessionHistoryProps) {
                   {session.exercises
                     .filter(e => e.completed)
                     .map(({ exercise }) => (
-                      <div key={exercise.id} className="flex items-center space-x-2 text-sm text-gray-700">
-                        <CheckCircle2 className="w-3.5 h-3.5 text-teal-500 flex-shrink-0" />
+                      <div key={exercise.id} className="flex items-center space-x-2 text-sm text-ink-2">
+                        <CheckCircle2 className="w-3.5 h-3.5 text-sea flex-shrink-0" />
                         <span>{exercise.name}</span>
-                        <span className="text-xs text-gray-400 ml-auto">{exercise.apparatus.replace('_', ' ')}</span>
+                        <span className="text-xs text-ink-3 ml-auto">{exercise.apparatus.replace('_', ' ')}</span>
                       </div>
                     ))
                   }
                 </div>
                 {completedCount === 0 && (
-                  <p className="text-xs text-gray-400 italic">No exercises logged for this session.</p>
+                  <p className="text-xs text-ink-3 italic">No exercises logged for this session.</p>
                 )}
               </div>
             )}

@@ -70,22 +70,22 @@ export class ErrorBoundary extends Component<Props, State> {
 
       // Default error UI
       return (
-        <div className="min-h-screen bg-gradient-to-br from-red-50 via-white to-orange-50 flex items-center justify-center p-4">
-          <div className="max-w-lg w-full bg-white rounded-2xl shadow-xl border border-red-100 p-8">
+        <div className="min-h-screen bg-foam flex items-center justify-center p-4">
+          <div className="max-w-lg w-full bg-white rounded-lg shadow-xl border border-red-100 p-8">
             <div className="text-center mb-6">
               <div className="inline-flex items-center justify-center w-16 h-16 bg-red-100 rounded-full mb-4">
                 <AlertTriangle className="w-8 h-8 text-red-600" />
               </div>
-              <h1 className="text-2xl font-semibold text-gray-800 mb-2">
+              <h1 className="text-2xl font-semibold text-ink mb-2">
                 Oops! Something went wrong
               </h1>
-              <p className="text-gray-600">
+              <p className="text-ink-2">
                 We encountered an unexpected error. Don't worry, your data is safe.
               </p>
             </div>
 
             {import.meta.env.DEV && this.state.error && (
-              <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+              <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded">
                 <p className="text-sm font-semibold text-red-800 mb-2">
                   Error Details (Development Only):
                 </p>
@@ -108,7 +108,7 @@ export class ErrorBoundary extends Component<Props, State> {
             <div className="space-y-3">
               <button
                 onClick={this.handleReset}
-                className="w-full flex items-center justify-center space-x-2 bg-gradient-to-r from-blue-600 to-teal-600 text-white py-3 px-4 rounded-lg font-medium hover:from-blue-700 hover:to-teal-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200"
+                className="w-full flex items-center justify-center space-x-2 bg-sea text-white py-3 px-4 rounded font-medium hover:bg-sea-deep focus:outline-none focus:ring-2 focus:ring-sea focus:ring-offset-2 transition-colors"
               >
                 <RefreshCw className="w-5 h-5" />
                 <span>Try Again</span>
@@ -116,7 +116,7 @@ export class ErrorBoundary extends Component<Props, State> {
 
               <button
                 onClick={this.handleGoHome}
-                className="w-full flex items-center justify-center space-x-2 bg-gray-100 text-gray-700 py-3 px-4 rounded-lg font-medium hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 transition-all duration-200"
+                className="w-full flex items-center justify-center space-x-2 bg-sand text-ink-2 py-3 px-4 rounded font-medium hover:bg-line focus:outline-none focus:ring-2 focus:ring-ink-3 focus:ring-offset-2 transition-colors"
               >
                 <Home className="w-5 h-5" />
                 <span>Go to Homepage</span>
@@ -124,11 +124,11 @@ export class ErrorBoundary extends Component<Props, State> {
             </div>
 
             <div className="mt-6 text-center">
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-ink-3">
                 If this problem persists, please contact us at{' '}
                 <a
                   href={getEmailLink(BUSINESS_INFO.email)}
-                  className="text-blue-600 hover:text-blue-800 underline"
+                  className="text-sea hover:text-sea-deep underline"
                 >
                   {BUSINESS_INFO.email}
                 </a>

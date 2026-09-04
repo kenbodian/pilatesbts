@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { User, Mail, Lock, Waves } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { handleError, logError, validatePassword } from '../utils/errorHandling';
 import { useToast } from '../hooks/useToast';
 import { ToastContainer } from './Toast';
+import { Wordmark } from './Wordmark';
+import { BUSINESS_INFO, getPhoneLink } from '../config/business';
 
 export function AuthPage() {
   const [isLogin, setIsLogin] = useState(true);
@@ -43,7 +44,7 @@ export function AuthPage() {
         });
         if (error) throw error;
 
-        success('Successfully signed in!');
+        success('Signed in');
       } else {
         const { data, error } = await supabase.auth.signUp({
           email,
@@ -57,7 +58,7 @@ export function AuthPage() {
         if (error) throw error;
 
         if (data.user && data.session) {
-          success('Account created successfully! Please complete your waiver.');
+          success('Account created. Next, complete your intake form.');
 
           // Send welcome email using the user's session token
           // This runs asynchronously and won't block the signup flow
@@ -96,115 +97,117 @@ export function AuthPage() {
   return (
     <>
       <ToastContainer toasts={toasts} onClose={removeToast} />
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-teal-50 flex items-center justify-center p-4">
-      <div className="relative max-w-md w-full bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-8">
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-blue-600 to-teal-600 rounded-full mb-4">
-            <Waves className="w-8 h-8 text-white" />
+      <div className="min-h-screen bg-foam lg:grid lg:grid-cols-[minmax(0,5fr)_minmax(0,6fr)]">
+        {/* Photograph panel */}
+        <aside className="relative hidden lg:block">
+          <picture>
+            <source srcSet="/ocean.webp" type="image/webp" />
+            <img
+              src="/ocean.png"
+              alt="Morning light on the beach near the studio in Ormond by the Sea"
+              className="absolute inset-0 h-full w-full object-cover object-[center_40%]"
+            />
+          </picture>
+          <div className="absolute inset-0 bg-gradient-to-t from-ink/70 via-ink/10 to-transparent" />
+          <div className="absolute inset-x-0 bottom-0 p-10 text-white">
+            <Wordmark size="large" inverted />
+            <p className="mt-3 max-w-sm text-white/85">
+              Private classical Pilates in Ormond by the Sea. One client, one instructor, one session at a time.
+            </p>
           </div>
-          <h1 className="text-3xl font-light text-gray-800 mb-2">
-            Pilates by the Sea
-          </h1>
-          <p className="text-gray-600 text-sm">
-            {isLogin
-              ? 'Sign in to access your dashboard'
-              : 'Create your account to get started'
-            }
-          </p>
-        </div>
+        </aside>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          {!isLogin && (
-            <div>
-              <label htmlFor="fullName" className="block text-sm font-medium text-gray-700 mb-1">
-                Full Name
-              </label>
-              <div className="relative">
-                <User className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+        {/* Form panel */}
+        <main className="flex min-h-screen items-center justify-center px-6 py-12 lg:min-h-0">
+          <div className="w-full max-w-sm">
+            <div className="mb-8 lg:hidden">
+              <Wordmark size="large" />
+            </div>
+
+            <h1 className="text-3xl">{isLogin ? 'Sign in' : 'Create your account'}</h1>
+            <p className="mt-2 text-ink-2">
+              {isLogin
+                ? 'Your member area: booking, studio details, and your intake form.'
+                : 'New clients complete a short intake form after signing up.'}
+            </p>
+
+            <form onSubmit={handleSubmit} className="mt-8 space-y-5">
+              {!isLogin && (
+                <div>
+                  <label htmlFor="fullName" className="label">Full name</label>
+                  <input
+                    type="text"
+                    id="fullName"
+                    value={fullName}
+                    onChange={(e) => setFullName(e.target.value)}
+                    className="field"
+                    autoComplete="name"
+                    required
+                  />
+                </div>
+              )}
+
+              <div>
+                <label htmlFor="email" className="label">Email</label>
                 <input
-                  type="text"
-                  id="fullName"
-                  value={fullName}
-                  onChange={(e) => setFullName(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                  placeholder="Enter your full name"
+                  type="email"
+                  id="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="field"
+                  autoComplete="email"
                   required
                 />
               </div>
-            </div>
-          )}
 
-          <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-              Email
-            </label>
-            <div className="relative">
-              <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-              <input
-                type="email"
-                id="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                placeholder="Enter your email"
-                required
-              />
-            </div>
-          </div>
-
-          <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
-              Password
-            </label>
-            <div className="relative">
-              <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-              <input
-                type="password"
-                id="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                placeholder="Enter your password"
-                required
-                minLength={6}
-              />
-            </div>
-          </div>
-
-          {error && (
-            <p className="text-red-500 text-sm animate-pulse">{error}</p>
-          )}
-
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-gradient-to-r from-blue-600 to-teal-600 text-white py-2.5 px-4 rounded-lg font-medium hover:from-blue-700 hover:to-teal-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transform transition-all duration-200 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
-          >
-            {loading ? (
-              <div className="flex items-center justify-center">
-                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
-                {isLogin ? 'Signing In...' : 'Creating Account...'}
+              <div>
+                <label htmlFor="password" className="label">Password</label>
+                <input
+                  type="password"
+                  id="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="field"
+                  autoComplete={isLogin ? 'current-password' : 'new-password'}
+                  required
+                  minLength={6}
+                />
+                {!isLogin && (
+                  <p className="hint">At least 8 characters, with a number and a special character.</p>
+                )}
               </div>
-            ) : (
-              isLogin ? 'Sign In' : 'Create Account'
-            )}
-          </button>
-        </form>
 
-        <div className="mt-6 text-center space-y-3">
-          <button
-            type="button"
-            onClick={() => setIsLogin(!isLogin)}
-            className="text-sm text-blue-600 hover:text-blue-800 font-medium transition-colors"
-          >
-            {isLogin
-              ? "Need to create an account? Sign up"
-              : "Already have an account? Sign in"
-            }
-          </button>
-        </div>
+              {error && (
+                <p className="text-sm text-red-700" role="alert">{error}</p>
+              )}
+
+              <button type="submit" disabled={loading} className="btn-primary w-full py-3">
+                {loading ? (
+                  <>
+                    <span className="h-4 w-4 animate-spin rounded-full border-b-2 border-white" aria-hidden="true" />
+                    {isLogin ? 'Signing in' : 'Creating account'}
+                  </>
+                ) : (
+                  isLogin ? 'Sign in' : 'Create account'
+                )}
+              </button>
+            </form>
+
+            <div className="mt-6 flex items-center justify-between gap-4 text-sm">
+              <button
+                type="button"
+                onClick={() => { setIsLogin(!isLogin); setError(''); }}
+                className="font-medium text-sea hover:text-sea-deep"
+              >
+                {isLogin ? 'New here? Create an account' : 'Already a member? Sign in'}
+              </button>
+              <a href={getPhoneLink(BUSINESS_INFO.phone)} className="whitespace-nowrap text-ink-3 hover:text-ink">
+                {BUSINESS_INFO.phone}
+              </a>
+            </div>
+          </div>
+        </main>
       </div>
-    </div>
     </>
   );
 }

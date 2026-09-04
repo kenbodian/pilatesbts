@@ -76,11 +76,11 @@ export function DueForReview({ onSelectClient }: DueForReviewProps) {
   if (items.length === 0) {
     return (
       <div className="text-center py-10">
-        <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
-          <AlertTriangle className="w-6 h-6 text-green-500" />
+        <div className="w-12 h-12 bg-sea-tint rounded-full flex items-center justify-center mx-auto mb-3">
+          <AlertTriangle className="w-6 h-6 text-sea" />
         </div>
-        <p className="text-gray-600 font-medium">All caught up!</p>
-        <p className="text-sm text-gray-400 mt-1">No exercises due for review across all clients.</p>
+        <p className="text-ink-2 font-medium">All caught up!</p>
+        <p className="text-sm text-ink-3 mt-1">No exercises due for review across all clients.</p>
       </div>
     );
   }
@@ -95,7 +95,7 @@ export function DueForReview({ onSelectClient }: DueForReviewProps) {
 
   return (
     <div className="space-y-3">
-      <p className="text-sm text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">
+      <p className="text-sm text-amber-700 bg-amber-50 border border-amber-200 rounded px-3 py-2">
         <AlertTriangle className="w-3.5 h-3.5 inline mr-1" />
         {items.length} exercise{items.length !== 1 ? 's' : ''} across {Object.keys(byClient).length} client{Object.keys(byClient).length !== 1 ? 's' : ''} haven't been practiced in 4+ weeks.
       </p>
@@ -104,29 +104,29 @@ export function DueForReview({ onSelectClient }: DueForReviewProps) {
         <button
           key={client.id}
           onClick={() => onSelectClient(client)}
-          className="w-full text-left bg-white rounded-xl border border-amber-200 hover:border-amber-400 hover:shadow-md transition-all p-4 group"
+          className="w-full text-left bg-white rounded-lg border border-amber-200 hover:border-amber-400 hover:shadow-md transition-colors p-4 group"
         >
           <div className="flex items-center justify-between mb-2">
-            <p className="font-semibold text-gray-800 group-hover:text-amber-700 transition-colors">
+            <p className="font-semibold text-ink group-hover:text-amber-700 transition-colors">
               {client.first_name} {client.last_name}
             </p>
             <div className="flex items-center space-x-2">
               <span className="text-xs bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full font-medium">
                 {clientItems.length} due
               </span>
-              <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-amber-500" />
+              <ChevronRight className="w-4 h-4 text-ink-3 group-hover:text-amber-500" />
             </div>
           </div>
           <div className="space-y-1">
             {clientItems.slice(0, 3).map((item, i) => (
-              <div key={i} className="flex items-center space-x-2 text-sm text-gray-600">
-                <span className="text-gray-300">·</span>
+              <div key={i} className="flex items-center space-x-2 text-sm text-ink-2">
+                <span className="text-line">·</span>
                 <span className="flex-1 truncate">{item.exerciseName}</span>
                 <span className="text-xs text-amber-600 flex-shrink-0">{item.daysSince}d ago</span>
               </div>
             ))}
             {clientItems.length > 3 && (
-              <p className="text-xs text-gray-400 pl-3">+{clientItems.length - 3} more</p>
+              <p className="text-xs text-ink-3 pl-3">+{clientItems.length - 3} more</p>
             )}
           </div>
         </button>

@@ -25,10 +25,10 @@ export function Toast({ id, type, message, duration = 5000, onClose }: ToastProp
   const config = {
     success: {
       icon: CheckCircle,
-      bgColor: 'bg-green-50',
-      borderColor: 'border-green-200',
-      iconColor: 'text-green-600',
-      textColor: 'text-green-800',
+      bgColor: 'bg-sea-tint',
+      borderColor: 'border-line',
+      iconColor: 'text-sea',
+      textColor: 'text-sea-deep',
     },
     error: {
       icon: XCircle,
@@ -39,17 +39,17 @@ export function Toast({ id, type, message, duration = 5000, onClose }: ToastProp
     },
     warning: {
       icon: AlertCircle,
-      bgColor: 'bg-yellow-50',
-      borderColor: 'border-yellow-200',
-      iconColor: 'text-yellow-600',
-      textColor: 'text-yellow-800',
+      bgColor: 'bg-amber-50',
+      borderColor: 'border-amber-200',
+      iconColor: 'text-amber-600',
+      textColor: 'text-amber-800',
     },
     info: {
       icon: Info,
-      bgColor: 'bg-blue-50',
-      borderColor: 'border-blue-200',
-      iconColor: 'text-blue-600',
-      textColor: 'text-blue-800',
+      bgColor: 'bg-sea-tint',
+      borderColor: 'border-line',
+      iconColor: 'text-sea',
+      textColor: 'text-sea-deep',
     },
   };
 
@@ -57,7 +57,7 @@ export function Toast({ id, type, message, duration = 5000, onClose }: ToastProp
 
   return (
     <div
-      className={`${bgColor} ${borderColor} border rounded-lg shadow-lg p-4 mb-3 flex items-start space-x-3 animate-slide-in-right max-w-md`}
+      className={`${bgColor} ${borderColor} border rounded shadow-lg p-4 mb-3 flex items-start space-x-3 animate-slide-in-right max-w-md`}
       role="alert"
     >
       <Icon className={`w-5 h-5 ${iconColor} flex-shrink-0 mt-0.5`} />

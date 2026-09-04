@@ -1,355 +1,234 @@
-import { MapPin, Phone, Waves, Calendar, MessageCircle } from 'lucide-react';
+import { Calendar, MapPin, MessageCircle, Phone } from 'lucide-react';
 import { BUSINESS_INFO, getPhoneLink, getEmailLink } from '../config/business';
 
 interface StudioContentProps {
-  heading?: string;
-  subheading?: string;
+  /** Opens the in-app contact form. Without it, the message tile falls back to email. */
   onMessageClick?: () => void;
 }
 
-export function StudioContent({
-  heading = 'Classical Pilates on the Florida coast',
-  subheading = 'Private sessions with Noël Bethea in an instructor-owned studio in Ormond by the Sea.',
-  onMessageClick,
-}: StudioContentProps) {
+const SERVICES: Array<{ name: string; description: string }> = [
+  {
+    name: 'Classical Pilates',
+    description: 'The traditional method: precise movement, alignment, and controlled breathing to build core strength and flexibility.',
+  },
+  {
+    name: 'Tower sessions',
+    description: 'Springs and bars that lengthen, strengthen, and restore. Good for core stability, posture, and ease of movement.',
+  },
+  {
+    name: 'Mat work',
+    description: 'Floor-based exercises using body weight and small props to strengthen the core and improve posture.',
+  },
+  {
+    name: 'Reformer for healthy aging',
+    description: 'Gentle reformer work for mature adults, to keep mobility, strength, and balance.',
+  },
+  {
+    name: 'Therapeutic Pilates',
+    description: 'Sessions built around injury recovery, chronic pain, and rehabilitation.',
+  },
+  {
+    name: 'Pre- and postnatal',
+    description: 'Safe, gentle work for expecting and new mothers: strength for pregnancy, support for recovery.',
+  },
+];
+
+const BEFORE_YOU_ARRIVE: Array<{ term: string; detail: string }> = [
+  {
+    term: 'Sessions',
+    detail: `Private, ${BUSINESS_INFO.pricing.privateLesson.duration} minutes, $${BUSINESS_INFO.pricing.privateLesson.price}. By appointment only.`,
+  },
+  {
+    term: 'Cancellation',
+    detail: '24 hours’ notice to cancel or reschedule. Late cancellations and no-shows are charged the full session fee.',
+  },
+  {
+    term: 'Payment',
+    detail: 'Due at booking or before the session.',
+  },
+  {
+    term: 'Arrival',
+    detail: 'Please arrive on time. Sessions cannot be extended for late arrivals.',
+  },
+  {
+    term: 'What to wear',
+    detail: 'Comfortable, form-fitting clothing without zippers. Grip socks are recommended.',
+  },
+  {
+    term: 'Your health',
+    detail: 'A completed intake form is required before your first session. Tell Noël about any change in health, injury, or surgery.',
+  },
+  {
+    term: 'In the studio',
+    detail: 'Phones silenced. Water bottles with lids only. Equipment is sanitized after every use.',
+  },
+];
+
+function SectionHeading({ eyebrow, title }: { eyebrow: string; title: string }) {
   return (
-    <>
-      <div className="mb-8 bg-gradient-to-r from-blue-600 to-teal-600 rounded-2xl p-6 text-white">
-        <h2 className="text-2xl font-light mb-2">{heading}</h2>
-        <p className="opacity-90">{subheading}</p>
-      </div>
+    <div className="mb-6 border-b border-line pb-3">
+      <p className="eyebrow">{eyebrow}</p>
+      <h2 className="mt-1 text-2xl sm:text-3xl">{title}</h2>
+    </div>
+  );
+}
 
-      <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200 mb-8">
-        <h2 className="text-xl font-semibold text-gray-800 mb-4">About the Studio</h2>
-        <p className="text-gray-600 leading-relaxed mb-4">
-          Pilates by the Sea is an instructor owned studio in Ormond by the Sea. Nestled along the stunning Florida coastline,
-          we offer a unique wellness experience where the rhythm of the ocean meets the flow of mindful movement. Our intimate
-          studio provides breathtaking ocean views that inspire tranquility and focus during every session.
+function Photo({
+  base,
+  alt,
+  caption,
+  ratio = 'aspect-[3/2]',
+  position = 'object-center',
+}: {
+  base: string;
+  alt: string;
+  caption?: string;
+  ratio?: string;
+  position?: string;
+}) {
+  const ext = base.startsWith('noel') ? 'jpg' : 'png';
+  return (
+    <figure className="m-0">
+      <picture>
+        <source srcSet={`/${base}.webp`} type="image/webp" />
+        <img
+          src={`/${base}.${ext}`}
+          alt={alt}
+          loading="lazy"
+          className={`${ratio} w-full rounded object-cover ${position}`}
+        />
+      </picture>
+      {caption && <figcaption className="mt-2 text-sm text-ink-3">{caption}</figcaption>}
+    </figure>
+  );
+}
+
+export function StudioContent({ onMessageClick }: StudioContentProps) {
+  const tileBase = 'flex items-start gap-3 rounded border p-4 text-left transition-colors';
+  const tile = `${tileBase} border-line bg-white hover:border-sea`;
+  const tilePrimary = `${tileBase} border-sea bg-sea text-white hover:border-sea-deep hover:bg-sea-deep`;
+  const tileIcon = 'mt-0.5 h-5 w-5 flex-shrink-0';
+
+  return (
+    <div className="space-y-14">
+      {/* 1. The three things a member comes here to do */}
+      <section aria-label="Actions" className="grid gap-3 sm:grid-cols-3">
+        <a
+          href={BUSINESS_INFO.links.calendar}
+          target="_blank"
+          rel="noopener noreferrer"
+          className={tilePrimary}
+        >
+          <Calendar className={`${tileIcon} text-white`} aria-hidden="true" />
+          <span>
+            <span className="block font-semibold">Book a session</span>
+            <span className="block text-sm text-white/85">Opens the studio calendar</span>
+          </span>
+        </a>
+        <a
+          href={BUSINESS_INFO.links.googleMaps}
+          target="_blank"
+          rel="noopener noreferrer"
+          className={tile}
+        >
+          <MapPin className={`${tileIcon} text-sea`} aria-hidden="true" />
+          <span>
+            <span className="block font-semibold text-ink">Find the studio</span>
+            <span className="block text-sm text-ink-2">{BUSINESS_INFO.address.street}, {BUSINESS_INFO.address.city}</span>
+          </span>
+        </a>
+        {onMessageClick ? (
+          <button type="button" onClick={onMessageClick} className={tile}>
+            <MessageCircle className={`${tileIcon} text-sea`} aria-hidden="true" />
+            <span>
+              <span className="block font-semibold text-ink">Message Noël</span>
+              <span className="block text-sm text-ink-2">Replies within a day</span>
+            </span>
+          </button>
+        ) : (
+          <a href={getEmailLink(BUSINESS_INFO.email, 'Question about Pilates by the Sea')} className={tile}>
+            <MessageCircle className={`${tileIcon} text-sea`} aria-hidden="true" />
+            <span>
+              <span className="block font-semibold text-ink">Email the studio</span>
+              <span className="block text-sm text-ink-2">{BUSINESS_INFO.email}</span>
+            </span>
+          </a>
+        )}
+      </section>
+
+      {/* 2. Policies, written the way the studio already writes them */}
+      <section>
+        <SectionHeading eyebrow="Good to know" title="Before you arrive" />
+        <dl className="divide-y divide-line">
+          {BEFORE_YOU_ARRIVE.map(({ term, detail }) => (
+            <div key={term} className="grid gap-1 py-3 sm:grid-cols-[10rem_minmax(0,1fr)] sm:gap-6">
+              <dt className="font-semibold text-ink">{term}</dt>
+              <dd className="m-0 max-w-read text-ink-2">{detail}</dd>
+            </div>
+          ))}
+        </dl>
+        <p className="mt-4 text-sm text-ink-3">
+          Questions? Call <a href={getPhoneLink(BUSINESS_INFO.phone)} className="text-sea hover:text-sea-deep">{BUSINESS_INFO.phone}</a>.
         </p>
-        <div className="mb-6 grid md:grid-cols-2 gap-4">
-          <picture>
-            <source srcSet="/IMG_5632.webp" type="image/webp" />
-            <img
-              src="/IMG_5632.jpg"
-              alt="Studio instructor in the Pilates studio"
-              className="w-full h-80 object-cover object-[center_25%] rounded-lg shadow-md"
-              loading="lazy"
-            />
-          </picture>
-          <picture>
-            <source srcSet="/IMG_5810.webp" type="image/webp" />
-            <img
-              src="/IMG_5810.jpg"
-              alt="Instructor working with client in the studio"
-              className="w-full h-80 object-cover rounded-lg shadow-md"
-              loading="lazy"
-            />
-          </picture>
-        </div>
-        <div className="bg-blue-50 p-6 rounded-lg border border-blue-200 mb-4">
-          <h3 className="font-semibold text-gray-800 mb-3">About Your Instructor</h3>
-          <p className="text-gray-700 leading-relaxed">
-            <strong>Noël Bethea</strong> is comprehensive certified with 700 hours in classical Pilates training.
-            With a background in dance and a Master of Science in Education, she brings both artistry and teaching
-            expertise to her Pilates practice. Trained in the classical repertoire, she offers tailored private
-            sessions that focus on strength, alignment, and flow.
-          </p>
-        </div>
-      </div>
+      </section>
 
-      <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200 mb-8">
-        <div className="flex items-center space-x-3 mb-6">
-          <div className="w-10 h-10 bg-teal-100 rounded-full flex items-center justify-center">
-            <Waves className="w-5 h-5 text-teal-600" />
-          </div>
-          <h2 className="text-xl font-semibold text-gray-800">Private Pilates Sessions</h2>
-        </div>
-
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <div className="border border-gray-200 rounded-lg p-4">
-            <h3 className="font-semibold text-gray-800 mb-2">Classical Pilates</h3>
-            <p className="text-gray-600 text-sm leading-relaxed">
-              Traditional Pilates method focusing on precise movements, proper alignment, and controlled breathing to build core strength and flexibility.
-            </p>
-          </div>
-
-          <div className="border border-gray-200 rounded-lg p-4">
-            <h3 className="font-semibold text-gray-800 mb-2">Tower Sessions</h3>
-            <p className="text-gray-600 text-sm leading-relaxed">
-              A versatile blend of springs and bars that lengthen, strengthen, and restore. Perfect for building core stability, improving posture, and moving with ease.
-            </p>
-          </div>
-
-          <div className="border border-gray-200 rounded-lg p-4">
-            <h3 className="font-semibold text-gray-800 mb-2">Mat Classes</h3>
-            <p className="text-gray-600 text-sm leading-relaxed">
-              Floor-based Pilates exercises using body weight and small props to strengthen your core and improve posture.
-            </p>
-          </div>
-
-          <div className="border border-gray-200 rounded-lg p-4">
-            <h3 className="font-semibold text-gray-800 mb-2">Reformer for Healthy Aging</h3>
-            <p className="text-gray-600 text-sm leading-relaxed">
-              Gentle reformer exercises designed specifically for mature adults to maintain mobility, strength, and balance as we age gracefully.
-            </p>
-          </div>
-
-          <div className="border border-gray-200 rounded-lg p-4">
-            <h3 className="font-semibold text-gray-800 mb-2">Therapeutic Pilates</h3>
-            <p className="text-gray-600 text-sm leading-relaxed">
-              Specialized sessions designed for injury recovery, chronic pain management, and physical rehabilitation.
-            </p>
-          </div>
-
-          <div className="border border-gray-200 rounded-lg p-4">
-            <h3 className="font-semibold text-gray-800 mb-2">Pre/Post Natal Pilates</h3>
-            <p className="text-gray-600 text-sm leading-relaxed">
-              Safe, gentle exercises designed for expecting mothers and new moms to maintain strength, prepare for childbirth, and support postpartum recovery.
-            </p>
-          </div>
-        </div>
-      </div>
-
-      <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200 mb-8">
-        <div className="flex items-center space-x-3 mb-6">
-          <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-            <Waves className="w-5 h-5 text-blue-600" />
-          </div>
-          <h2 className="text-xl font-semibold text-gray-800">Our Studio</h2>
-        </div>
-
-        <p className="text-gray-600 mb-6 leading-relaxed">
-          Step into our serene coastal sanctuary where every detail has been thoughtfully designed to enhance your Pilates experience.
-          Our studio features floor-to-ceiling windows offering breathtaking ocean views, creating a tranquil atmosphere that inspires mindful movement.
+      {/* 3. What a session can be */}
+      <section>
+        <SectionHeading eyebrow="Private sessions" title="Ways to work" />
+        <p className="mb-6 max-w-read text-ink-2">
+          Every session is one-to-one and shaped around you. These are the directions a session can take;
+          most clients move between them over time.
         </p>
-
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-          <div className="relative overflow-hidden rounded-lg">
-            <picture>
-              <source srcSet="/IMG_5919.webp" type="image/webp" />
-              <img
-                src="/IMG_5919.jpg"
-                alt="Mat session in the studio"
-                className="w-full h-48 object-cover hover:scale-105 transition-transform duration-300"
-                loading="lazy"
-              />
-            </picture>
-            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-3">
-              <p className="text-white text-sm font-medium">Mat Sessions</p>
-            </div>
-          </div>
-
-          <div className="relative overflow-hidden rounded-lg">
-            <picture>
-              <source srcSet="/IMG_8662%20copy.webp" type="image/webp" />
-              <img
-                src="/IMG_8662 copy.png"
-                alt="Instructor working with client on tower"
-                className="w-full h-48 object-cover hover:scale-105 transition-transform duration-300"
-                loading="lazy"
-              />
-            </picture>
-            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-3">
-              <p className="text-white text-sm font-medium">Tower Sessions</p>
-            </div>
-          </div>
-
-          <div className="relative overflow-hidden rounded-lg">
-            <picture>
-              <source srcSet="/IMG_8664%20copy.webp" type="image/webp" />
-              <img
-                src="/IMG_8664 copy.png"
-                alt="Instructor guiding client through reformer exercises"
-                className="w-full h-48 object-cover hover:scale-105 transition-transform duration-300"
-                loading="lazy"
-              />
-            </picture>
-            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-3">
-              <p className="text-white text-sm font-medium">Reformer Sessions</p>
-            </div>
-          </div>
-
-          <div className="relative overflow-hidden rounded-lg">
-            <picture>
-              <source srcSet="/FullSizeRender%20copy.webp" type="image/webp" />
-              <img
-                src="/FullSizeRender copy.png"
-                alt="Ocean view near the studio"
-                className="w-full h-48 object-cover hover:scale-105 transition-transform duration-300"
-                loading="lazy"
-              />
-            </picture>
-            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-3">
-              <p className="text-white text-sm font-medium">Ocean Setting</p>
-            </div>
-          </div>
-
-          <div className="relative overflow-hidden rounded-lg">
-            <picture>
-              <source srcSet="/IMG_5942%20copy.webp" type="image/webp" />
-              <img
-                src="/IMG_5942 copy.png"
-                alt="Personal instruction session"
-                className="w-full h-48 object-cover hover:scale-105 transition-transform duration-300"
-                loading="lazy"
-              />
-            </picture>
-            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-3">
-              <p className="text-white text-sm font-medium">Personal Instruction</p>
-            </div>
-          </div>
-
-          <div className="relative overflow-hidden rounded-lg">
-            <picture>
-              <source srcSet="/outside.webp" type="image/webp" />
-              <img
-                src="/outside.png"
-                alt="Outside view of the studio"
-                className="w-full h-48 object-cover hover:scale-105 transition-transform duration-300"
-                loading="lazy"
-              />
-            </picture>
-            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-3">
-              <p className="text-white text-sm font-medium">Studio Photo</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="grid gap-6 mb-8 md:grid-cols-3">
-        <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
-          <div className="flex items-center space-x-3 mb-3">
-            <div className="w-10 h-10 bg-teal-100 rounded-full flex items-center justify-center">
-              <Calendar className="w-5 h-5 text-teal-600" />
-            </div>
-            <h3 className="font-semibold text-gray-800">Book Your Session</h3>
-          </div>
-          <p className="text-gray-600 text-sm leading-relaxed mb-4">
-            Schedule your personalized Pilates session at a time that works for you.
-          </p>
-          <div className="mt-4">
-            <a
-              href={BUSINESS_INFO.links.calendar}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-600 to-teal-600 text-white text-sm font-medium rounded-lg hover:from-blue-700 hover:to-teal-700 transition-colors"
-            >
-              <Calendar className="w-4 h-4 mr-2" />
-              Open Calendar
-            </a>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
-          <div className="flex items-center space-x-3 mb-3">
-            <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-              <MapPin className="w-5 h-5 text-blue-600" />
-            </div>
-            <h3 className="font-semibold text-gray-800">Studio Location</h3>
-          </div>
-          <p className="text-gray-600 text-sm leading-relaxed">
-            {BUSINESS_INFO.address.street}<br />
-            {BUSINESS_INFO.address.city}, {BUSINESS_INFO.address.state} {BUSINESS_INFO.address.zip}<br />
-            Beautiful Florida Coast
-          </p>
-          <div className="mt-4">
-            <a
-              href={BUSINESS_INFO.links.googleMaps}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors"
-            >
-              <MapPin className="w-4 h-4 mr-2" />
-              View on Google Maps
-            </a>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
-          <div className="flex items-center space-x-3 mb-3">
-            <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
-              <Phone className="w-5 h-5 text-green-600" />
-            </div>
-            <h3 className="font-semibold text-gray-800">Contact & Email</h3>
-          </div>
-          <p className="text-gray-600 text-sm leading-relaxed mb-4">
-            Phone: <a href={getPhoneLink(BUSINESS_INFO.phone)} className="hover:text-green-700">{BUSINESS_INFO.phone}</a><br />
-            <a href={getEmailLink(BUSINESS_INFO.email)} className="hover:text-green-700">{BUSINESS_INFO.email}</a>
-          </p>
-          <div className="mt-4">
-            {onMessageClick ? (
-              <button
-                type="button"
-                onClick={onMessageClick}
-                className="inline-flex items-center px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-700 transition-colors"
-              >
-                <MessageCircle className="w-4 h-4 mr-2" />
-                Send Us a Message
-              </button>
-            ) : (
-              <a
-                href={getEmailLink(BUSINESS_INFO.email, 'Question about Pilates by the Sea')}
-                className="inline-flex items-center px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-700 transition-colors"
-              >
-                <MessageCircle className="w-4 h-4 mr-2" />
-                Email the Studio
-              </a>
-            )}
-          </div>
-        </div>
-      </div>
-
-      <div className="mt-8 grid md:grid-cols-2 gap-6">
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-          <h3 className="font-semibold text-gray-800 mb-4">Class Policies</h3>
-          <ul className="space-y-2 text-sm text-gray-600">
-            <li>• All sessions are by appointment only</li>
-            <li>• A minimum of 24-hour&apos;s notice is required to cancel or reschedule</li>
-            <li>• Late cancellation or no-show will be charged the full session fee</li>
-            <li>• Payment is due at the time of booking or before session</li>
-          </ul>
-
-          <h3 className="font-semibold text-gray-800 mb-4 mt-6">Pricing</h3>
-          <ul className="space-y-2 text-sm text-gray-600">
-            <li>
-              • Private Lessons are ${BUSINESS_INFO.pricing.privateLesson.price} per{' '}
-              {BUSINESS_INFO.pricing.privateLesson.duration} {BUSINESS_INFO.pricing.privateLesson.unit} session
+        <ul className="grid gap-x-10 sm:grid-cols-2">
+          {SERVICES.map(({ name, description }) => (
+            <li key={name} className="border-t border-line py-4">
+              <h3 className="font-sans text-base font-semibold text-ink">{name}</h3>
+              <p className="mt-1 text-ink-2">{description}</p>
             </li>
-          </ul>
+          ))}
+        </ul>
+      </section>
+
+      {/* 4. The studio */}
+      <section>
+        <SectionHeading eyebrow="Ormond by the Sea" title="The studio" />
+        <p className="mb-6 max-w-read text-ink-2">
+          Pilates by the Sea is an instructor-owned studio in Ormond by the Sea, on the Florida coast.
+          Sessions are private: one client and one instructor on the reformer, tower, or mat, with the ocean
+          in view.
+        </p>
+        <div className="grid gap-4 sm:grid-cols-3">
+          <Photo base="session-instruction" alt="Noël adjusting a client's arm position during a standing exercise" caption="Private instruction" />
+          <Photo base="studio-tower" alt="The tower and reformer in the studio, with a full-length mirror" caption="Tower and reformer" position="object-[center_60%]" />
+          <Photo base="session-reformer" alt="Noël guiding a client's arm along the reformer bar" caption="On the reformer" />
         </div>
+      </section>
 
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-          <h3 className="font-semibold text-gray-800 mb-4">What to Expect</h3>
-          <div className="space-y-4 text-sm text-gray-600">
-            <div>
-              <h4 className="font-medium text-gray-800 mb-2">Arrivals & Attire</h4>
-              <ul className="space-y-1">
-                <li>• Please arrive on time — sessions cannot be extended for late arrivals.</li>
-                <li>• Wear comfortable, form-fitting clothing (no zippers).</li>
-                <li>• Grip socks are recommended for safety.</li>
-              </ul>
-            </div>
-
-            <div>
-              <h4 className="font-medium text-gray-800 mb-2">Health & Safety</h4>
-              <ul className="space-y-1">
-                <li>• A completed intake/waiver form is required before your first session.</li>
-                <li>• Please inform me of any changes in your health, injuries, or surgeries.</li>
-                <li>• Equipment is sanitized after every use.</li>
-              </ul>
-            </div>
-
-            <div>
-              <h4 className="font-medium text-gray-800 mb-2">Studio Etiquette</h4>
-              <ul className="space-y-1">
-                <li>• Cell phones silenced during sessions.</li>
-                <li>• Only water bottles with lids in the studio.</li>
-                <li>• Please respect the equipment and space.</li>
-              </ul>
-            </div>
+      {/* 5. The instructor */}
+      <section>
+        <SectionHeading eyebrow="Your instructor" title="Noël Bethea" />
+        <div className="grid gap-6 sm:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] sm:items-start">
+          <Photo base="noel-portrait" alt="Noël Bethea in the studio" ratio="aspect-[4/5]" position="object-[center_25%]" />
+          <div className="max-w-read space-y-4 text-ink-2">
+            <p>
+              Noël is comprehensively certified in classical Pilates, with 700 hours of training in the
+              classical repertoire. Her background is in dance, and she holds a Master of Science in Education.
+            </p>
+            <p>
+              She teaches tailored private sessions that focus on strength, alignment, and flow, and she brings
+              both the artistry of dance and the patience of a teacher to every one of them.
+            </p>
+            <p className="flex flex-wrap gap-x-5 gap-y-1 text-sm">
+              <a href={getPhoneLink(BUSINESS_INFO.phone)} className="inline-flex items-center gap-1.5 text-sea hover:text-sea-deep">
+                <Phone className="h-4 w-4" aria-hidden="true" />{BUSINESS_INFO.phone}
+              </a>
+              <a href={getEmailLink(BUSINESS_INFO.email)} className="inline-flex items-center gap-1.5 text-sea hover:text-sea-deep">
+                <MessageCircle className="h-4 w-4" aria-hidden="true" />{BUSINESS_INFO.email}
+              </a>
+            </p>
           </div>
         </div>
-      </div>
-    </>
+      </section>
+    </div>
   );
 }
