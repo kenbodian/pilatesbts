@@ -1,17 +1,20 @@
 import { useState, useEffect } from 'react';
-import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
+import { BrowserRouter, Navigate, Route, Routes, useNavigate } from 'react-router-dom';
+import type { User } from '@supabase/supabase-js';
 import { AuthPage } from './components/AuthPage';
 import { WaiverForm } from './components/WaiverForm';
 import { Dashboard } from './components/Dashboard';
 import { AdminDashboard } from './components/AdminDashboard';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { InstallBanner } from './components/InstallBanner';
-import { PublicHomePage } from './components/PublicHomePage';
 import { useAuth } from './hooks/useAuth';
 import { supabase } from './lib/supabase';
 import { handleError, logError } from './utils/errorHandling';
 
-type MemberView = 'waiver' | 'dashboard' | 'admin';
+interface MemberStatus {
+  isAdmin: boolean;
+  hasWaiver: boolean;
+}
 
 function LoadingScreen() {
   return (
@@ -24,17 +27,83 @@ function LoadingScreen() {
   );
 }
 
+/** The login page. Everything else on the site sits behind it. */
+function LoginRoute() {
+  const { user, loading } = useAuth();
+
+  if (loading) {
+    return <LoadingScreen />;
+  }
+
+  if (user) {
+    return <Navigate to="/app" replace />;
+  }
+
+  return <AuthPage />;
+}
+
+function AdminRoute({ user }: { user: User }) {
+  const navigate = useNavigate();
+  return (
+    <AdminDashboard
+      user={user}
+      onViewSite={() => navigate('/app/site')}
+      onViewIntakeForm={() => navigate('/app/intake')}
+    />
+  );
+}
+
+function SiteRoute({ user, isAdmin }: { user: User; isAdmin: boolean }) {
+  const navigate = useNavigate();
+  return (
+    <Dashboard
+      user={user}
+      isAdmin={isAdmin}
+      onBackToAdmin={isAdmin ? () => navigate('/app/admin') : undefined}
+    />
+  );
+}
+
+function IntakeRoute({
+  user,
+  isAdmin,
+  onWaiverComplete,
+}: {
+  user: User;
+  isAdmin: boolean;
+  onWaiverComplete: () => void;
+}) {
+  const navigate = useNavigate();
+  return (
+    <WaiverForm
+      userEmail={user.email || ''}
+      previewMode={isAdmin}
+      onBackToAdmin={isAdmin ? () => navigate('/app/admin') : undefined}
+      onComplete={() => {
+        onWaiverComplete();
+        // Admins previewing the intake form go back to the admin dashboard
+        navigate(isAdmin ? '/app/admin' : '/app/site', { replace: true });
+      }}
+    />
+  );
+}
+
+/**
+ * Signed-in area. Loads the user's role and waiver status once, then routes:
+ *   /app         -> admin dashboard, member site, or intake form by status
+ *   /app/admin   -> admin dashboard (admins only)
+ *   /app/site    -> member site (members need a waiver first; admins always)
+ *   /app/intake  -> intake / waiver form (read-only preview for admins)
+ */
 function MemberArea() {
   const { user, loading } = useAuth();
-  const [memberView, setMemberView] = useState<MemberView | null>(null);
-  const [isAdmin, setIsAdmin] = useState(false);
+  const [status, setStatus] = useState<MemberStatus | null>(null);
   const [checkingUserData, setCheckingUserData] = useState(false);
 
   useEffect(() => {
     const checkUserData = async () => {
       if (!user) {
-        setMemberView(null);
-        setIsAdmin(false);
+        setStatus(null);
         return;
       }
 
@@ -54,23 +123,15 @@ function MemberArea() {
             .maybeSingle(),
         ]);
 
-        const adminStatus = adminResult.data?.role === 'admin' && !adminResult.error;
-        const waiverStatus = !!waiverResult.data && !waiverResult.error;
-
-        setIsAdmin(adminStatus);
-
-        if (adminStatus) {
-          setMemberView('admin');
-        } else if (!waiverStatus) {
-          setMemberView('waiver');
-        } else {
-          setMemberView('dashboard');
-        }
+        setStatus({
+          isAdmin: adminResult.data?.role === 'admin' && !adminResult.error,
+          hasWaiver: !!waiverResult.data && !waiverResult.error,
+        });
       } catch (error: unknown) {
         const appError = handleError(error);
         logError(appError, 'App.checkUserData');
-        setMemberView(null);
-        setIsAdmin(false);
+        // Fall back to the safest view: a regular member who still needs a waiver
+        setStatus({ isAdmin: false, hasWaiver: false });
       } finally {
         setCheckingUserData(false);
       }
@@ -79,73 +140,47 @@ function MemberArea() {
     checkUserData();
   }, [user]);
 
-  const handleWaiverComplete = () => {
-    // Admins previewing the intake form go back to the admin dashboard
-    setMemberView(isAdmin ? 'admin' : 'dashboard');
-  };
-
-  const backToAdmin = isAdmin ? () => setMemberView('admin') : undefined;
-
-  if (loading || checkingUserData) {
+  if (loading || checkingUserData || (user && !status)) {
     return <LoadingScreen />;
   }
 
-  if (!user) {
-    return <Navigate to="/login" replace />;
+  if (!user || !status) {
+    return <Navigate to="/" replace />;
   }
 
-  if (memberView === 'waiver') {
-    return (
-      <>
-        <WaiverForm
-          onComplete={handleWaiverComplete}
-          userEmail={user.email || ''}
-          previewMode={isAdmin}
-          onBackToAdmin={backToAdmin}
-        />
-        <InstallBanner />
-      </>
-    );
-  }
+  const { isAdmin, hasWaiver } = status;
+  const markWaiverComplete = () =>
+    setStatus((current) => (current ? { ...current, hasWaiver: true } : current));
+
+  const landing = isAdmin ? '/app/admin' : hasWaiver ? '/app/site' : '/app/intake';
 
   return (
     <>
-      {memberView === 'admin' ? (
-        <AdminDashboard
-          user={user}
-          onViewSite={() => setMemberView('dashboard')}
-          onViewIntakeForm={() => setMemberView('waiver')}
+      <Routes>
+        <Route index element={<Navigate to={landing} replace />} />
+        <Route
+          path="admin"
+          element={isAdmin ? <AdminRoute user={user} /> : <Navigate to={landing} replace />}
         />
-      ) : (
-        <Dashboard user={user} isAdmin={isAdmin} onBackToAdmin={backToAdmin} />
-      )}
+        <Route
+          path="site"
+          element={
+            isAdmin || hasWaiver ? (
+              <SiteRoute user={user} isAdmin={isAdmin} />
+            ) : (
+              <Navigate to="/app/intake" replace />
+            )
+          }
+        />
+        <Route
+          path="intake"
+          element={<IntakeRoute user={user} isAdmin={isAdmin} onWaiverComplete={markWaiverComplete} />}
+        />
+        <Route path="*" element={<Navigate to={landing} replace />} />
+      </Routes>
       <InstallBanner />
     </>
   );
-}
-
-function LoginRoute() {
-  const { user, loading } = useAuth();
-
-  if (loading) {
-    return <LoadingScreen />;
-  }
-
-  if (user) {
-    return <Navigate to="/app" replace />;
-  }
-
-  return <AuthPage />;
-}
-
-function HomeRoute() {
-  const { user, loading } = useAuth();
-
-  if (!loading && user) {
-    return <Navigate to="/app" replace />;
-  }
-
-  return <PublicHomePage />;
 }
 
 function App() {
@@ -153,9 +188,9 @@ function App() {
     <ErrorBoundary>
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<HomeRoute />} />
-          <Route path="/login" element={<LoginRoute />} />
-          <Route path="/app" element={<MemberArea />} />
+          <Route path="/" element={<LoginRoute />} />
+          <Route path="/login" element={<Navigate to="/" replace />} />
+          <Route path="/app/*" element={<MemberArea />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </BrowserRouter>

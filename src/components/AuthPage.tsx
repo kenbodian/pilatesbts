@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
 import { User, Mail, Lock, Waves } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { handleError, logError, validatePassword } from '../utils/errorHandling';
@@ -203,14 +202,6 @@ export function AuthPage() {
               : "Already have an account? Sign in"
             }
           </button>
-          <div>
-            <Link
-              to="/"
-              className="text-sm text-gray-500 hover:text-gray-800 transition-colors"
-            >
-              Back to the studio homepage
-            </Link>
-          </div>
         </div>
       </div>
     </div>
