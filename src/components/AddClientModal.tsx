@@ -66,18 +66,18 @@ export function AddClientModal({ instructorId, onSaved, onClose }: AddClientModa
   };
 
   const inputClass =
-    'w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-400 focus:border-transparent';
+    'w-full border border-line rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-sea focus:border-transparent';
 
   return (
     <div className="fixed inset-0 bg-black/40 flex items-end sm:items-center justify-center z-50 p-0 sm:p-4">
-      <div className="bg-white w-full sm:max-w-lg rounded-t-2xl sm:rounded-2xl shadow-xl max-h-[92vh] flex flex-col">
+      <div className="bg-white w-full sm:max-w-lg rounded-t-lg sm:rounded-lg shadow-xl max-h-[92vh] flex flex-col">
         {/* Header */}
-        <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 flex-shrink-0">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-sand flex-shrink-0">
           <div className="flex items-center space-x-2">
-            <UserPlus className="w-5 h-5 text-teal-600" />
-            <h2 className="font-semibold text-gray-800">New Client</h2>
+            <UserPlus className="w-5 h-5 text-sea" />
+            <h2 className="font-semibold text-ink">New Client</h2>
           </div>
-          <button onClick={onClose} className="p-1.5 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100 transition-colors">
+          <button onClick={onClose} className="p-1.5 text-ink-3 hover:text-ink-2 rounded hover:bg-sand transition-colors">
             <X className="w-4 h-4" />
           </button>
         </div>
@@ -88,11 +88,11 @@ export function AddClientModal({ instructorId, onSaved, onClose }: AddClientModa
             {/* Name */}
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-xs font-medium text-gray-500 mb-1">First name *</label>
+                <label className="block text-xs font-medium text-ink-3 mb-1">First name *</label>
                 <input {...field('first_name')} className={inputClass} placeholder="Alisa" required autoFocus />
               </div>
               <div>
-                <label className="block text-xs font-medium text-gray-500 mb-1">Last name *</label>
+                <label className="block text-xs font-medium text-ink-3 mb-1">Last name *</label>
                 <input {...field('last_name')} className={inputClass} placeholder="Smith" required />
               </div>
             </div>
@@ -100,15 +100,15 @@ export function AddClientModal({ instructorId, onSaved, onClose }: AddClientModa
             {/* Physical */}
             <div className="grid grid-cols-3 gap-3">
               <div>
-                <label className="block text-xs font-medium text-gray-500 mb-1">Height</label>
+                <label className="block text-xs font-medium text-ink-3 mb-1">Height</label>
                 <input {...field('height')} className={inputClass} placeholder="5'6&quot;" />
               </div>
               <div>
-                <label className="block text-xs font-medium text-gray-500 mb-1">Weight</label>
+                <label className="block text-xs font-medium text-ink-3 mb-1">Weight</label>
                 <input {...field('weight')} className={inputClass} placeholder="140 lbs" />
               </div>
               <div>
-                <label className="block text-xs font-medium text-gray-500 mb-1">Pain (0–10)</label>
+                <label className="block text-xs font-medium text-ink-3 mb-1">Pain (0–10)</label>
                 <input
                   type="number" min="0" max="10"
                   {...field('pain_scale')}
@@ -120,7 +120,7 @@ export function AddClientModal({ instructorId, onSaved, onClose }: AddClientModa
 
             {/* Goals */}
             <div>
-              <label className="block text-xs font-medium text-gray-500 mb-1">Goals</label>
+              <label className="block text-xs font-medium text-ink-3 mb-1">Goals</label>
               <textarea
                 {...field('goals')}
                 className={inputClass + ' resize-none'}
@@ -131,7 +131,7 @@ export function AddClientModal({ instructorId, onSaved, onClose }: AddClientModa
 
             {/* Injuries */}
             <div>
-              <label className="block text-xs font-medium text-gray-500 mb-1">Injuries / Considerations</label>
+              <label className="block text-xs font-medium text-ink-3 mb-1">Injuries / Considerations</label>
               <textarea
                 {...field('injuries')}
                 className={inputClass + ' resize-none'}
@@ -142,7 +142,7 @@ export function AddClientModal({ instructorId, onSaved, onClose }: AddClientModa
 
             {/* Notes */}
             <div>
-              <label className="block text-xs font-medium text-gray-500 mb-1">Notes</label>
+              <label className="block text-xs font-medium text-ink-3 mb-1">Notes</label>
               <textarea
                 {...field('notes')}
                 className={inputClass + ' resize-none'}
@@ -152,23 +152,23 @@ export function AddClientModal({ instructorId, onSaved, onClose }: AddClientModa
             </div>
 
             {error && (
-              <p className="text-sm text-red-600 bg-red-50 rounded-lg px-3 py-2">{error}</p>
+              <p className="text-sm text-red-600 bg-red-50 rounded px-3 py-2">{error}</p>
             )}
           </div>
 
           {/* Actions */}
-          <div className="px-5 py-4 border-t border-gray-100 flex space-x-3 flex-shrink-0">
+          <div className="px-5 py-4 border-t border-sand flex space-x-3 flex-shrink-0">
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 px-4 py-2.5 border border-gray-200 rounded-lg text-sm text-gray-600 hover:bg-gray-50 transition-colors font-medium"
+              className="flex-1 px-4 py-2.5 border border-line rounded text-sm text-ink-2 hover:bg-foam transition-colors font-medium"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={saving}
-              className="flex-1 px-4 py-2.5 bg-teal-600 text-white rounded-lg text-sm font-medium hover:bg-teal-700 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+              className="flex-1 px-4 py-2.5 bg-sea text-white rounded text-sm font-medium hover:bg-sea-deep transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
             >
               {saving ? 'Adding…' : 'Add Client'}
             </button>

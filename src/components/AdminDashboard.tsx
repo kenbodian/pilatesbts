@@ -1,14 +1,18 @@
-import React, { useState, useEffect } from 'react';
-import { Shield, FileText, LogOut, Download, Calendar, CreditCard, AlertTriangle, Globe, ClipboardList } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+import {
+  AlertTriangle, Calendar, ClipboardList, CreditCard, Download, FileText, Globe, LogOut, MoreHorizontal, X,
+} from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { ClientRoster } from './ClientRoster';
 import { ClientCard } from './ClientCard';
 import { AddClientModal } from './AddClientModal';
 import { DueForReview } from './DueForReview';
+import { Wordmark } from './Wordmark';
 import type { InstructorClient } from '../types/clientCards';
+import type { User } from '@supabase/supabase-js';
 
 interface AdminDashboardProps {
-  user: any;
+  user: User;
   /** Switch to the member-facing site (studio info, services, contact). */
   onViewSite?: () => void;
   /** Open the client intake form in read-only preview mode. */
@@ -41,8 +45,16 @@ interface Waiver {
 
 type Tab = 'cards' | 'review' | 'waivers';
 
+const TABS: Array<{ key: Tab; label: string; icon: typeof CreditCard }> = [
+  { key: 'cards', label: 'Clients', icon: CreditCard },
+  { key: 'review', label: 'Review', icon: AlertTriangle },
+  { key: 'waivers', label: 'Waivers', icon: FileText },
+];
+
 export function AdminDashboard({ user, onViewSite, onViewIntakeForm }: AdminDashboardProps) {
   const [activeTab, setActiveTab] = useState<Tab>('cards');
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
 
   // ── Client Cards state ──
   const [selectedClient, setSelectedClient] = useState<InstructorClient | null>(null);
@@ -60,7 +72,25 @@ export function AdminDashboard({ user, onViewSite, onViewIntakeForm }: AdminDash
     if (activeTab === 'waivers' && !waiversLoaded) {
       loadWaivers();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeTab]);
+
+  // Close the actions menu on outside click or Escape
+  useEffect(() => {
+    if (!menuOpen) return;
+    const onClick = (e: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) setMenuOpen(false);
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setMenuOpen(false);
+    };
+    document.addEventListener('mousedown', onClick);
+    document.addEventListener('keydown', onKey);
+    return () => {
+      document.removeEventListener('mousedown', onClick);
+      document.removeEventListener('keydown', onKey);
+    };
+  }, [menuOpen]);
 
   const loadWaivers = async () => {
     setLoadingWaivers(true);
@@ -81,6 +111,11 @@ export function AdminDashboard({ user, onViewSite, onViewIntakeForm }: AdminDash
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
+  };
+
+  const selectTab = (tab: Tab) => {
+    setActiveTab(tab);
+    if (tab === 'cards') setSelectedClient(null);
   };
 
   const formatDate = (dateString: string) =>
@@ -115,90 +150,95 @@ export function AdminDashboard({ user, onViewSite, onViewIntakeForm }: AdminDash
     a.click();
   };
 
+  const tabButton = (tab: Tab, layout: 'bar' | 'bottom') => {
+    const { label, icon: Icon } = TABS.find(t => t.key === tab)!;
+    const active = activeTab === tab;
+    if (layout === 'bottom') {
+      return (
+        <button
+          key={tab}
+          onClick={() => selectTab(tab)}
+          aria-current={active ? 'page' : undefined}
+          className={`flex flex-1 flex-col items-center gap-1 py-2 text-xs font-medium transition-colors ${
+            active ? 'text-sea' : 'text-ink-3 hover:text-ink'
+          }`}
+        >
+          <Icon className="h-5 w-5" aria-hidden="true" />
+          {label}
+        </button>
+      );
+    }
+    return (
+      <button
+        key={tab}
+        onClick={() => selectTab(tab)}
+        aria-current={active ? 'page' : undefined}
+        className={`flex items-center gap-1.5 rounded px-3 py-1.5 text-sm font-medium transition-colors ${
+          active ? 'bg-white text-sea shadow-sm' : 'text-ink-2 hover:text-ink'
+        }`}
+      >
+        <Icon className="h-4 w-4" aria-hidden="true" />
+        {label}
+      </button>
+    );
+  };
+
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-foam pb-20 sm:pb-0">
       {/* ── Header ── */}
-      <header className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-30">
-        <div className="max-w-3xl mx-auto px-4 py-3 flex items-center justify-between">
-          <div className="flex items-center space-x-3">
-            <div className="w-9 h-9 bg-gradient-to-r from-blue-600 to-teal-600 rounded-full flex items-center justify-center">
-              <Shield className="w-5 h-5 text-white" />
-            </div>
-            <span className="text-base font-light text-gray-800 hidden sm:block">Pilates BTS Studio</span>
-          </div>
+      <header className="sticky top-0 z-30 border-b border-line bg-white/95 backdrop-blur-sm">
+        <div className="mx-auto flex max-w-work items-center justify-between gap-3 px-4 py-3">
+          <Wordmark tag="Admin" />
 
-          {/* Tab nav */}
-          <div className="flex items-center bg-gray-100 rounded-lg p-1 space-x-1">
-            <button
-              onClick={() => { setActiveTab('cards'); setSelectedClient(null); }}
-              className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
-                activeTab === 'cards'
-                  ? 'bg-white text-teal-700 shadow-sm'
-                  : 'text-gray-500 hover:text-gray-700'
-              }`}
-            >
-              <CreditCard className="w-4 h-4" />
-              <span>Client Cards</span>
-            </button>
-            <button
-              onClick={() => setActiveTab('review')}
-              className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
-                activeTab === 'review'
-                  ? 'bg-white text-amber-700 shadow-sm'
-                  : 'text-gray-500 hover:text-gray-700'
-              }`}
-            >
-              <AlertTriangle className="w-4 h-4" />
-              <span className="hidden sm:inline">Review</span>
-            </button>
-            <button
-              onClick={() => setActiveTab('waivers')}
-              className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
-                activeTab === 'waivers'
-                  ? 'bg-white text-blue-700 shadow-sm'
-                  : 'text-gray-500 hover:text-gray-700'
-              }`}
-            >
-              <FileText className="w-4 h-4" />
-              <span className="hidden sm:inline">Waivers</span>
-            </button>
-          </div>
+          {/* Tabs live in the bar from the tablet breakpoint up; below that, in the bottom bar */}
+          <nav className="hidden items-center gap-1 rounded bg-sand p-1 sm:flex" aria-label="Admin sections">
+            {TABS.map(t => tabButton(t.key, 'bar'))}
+          </nav>
 
-          <div className="flex items-center space-x-1">
-            {onViewSite && (
-              <button
-                onClick={onViewSite}
-                title="View the member site"
-                className="flex items-center space-x-1 px-3 py-1.5 text-teal-600 hover:text-teal-800 hover:bg-teal-50 rounded-lg transition-colors text-sm"
-              >
-                <Globe className="w-4 h-4" />
-                <span className="hidden lg:block">View Site</span>
-              </button>
-            )}
-            {onViewIntakeForm && (
-              <button
-                onClick={onViewIntakeForm}
-                title="Preview the client intake form"
-                className="flex items-center space-x-1 px-3 py-1.5 text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-lg transition-colors text-sm"
-              >
-                <ClipboardList className="w-4 h-4" />
-                <span className="hidden lg:block">Intake Form</span>
-              </button>
-            )}
+          {/* Everything that is not a section lives under one menu */}
+          <div className="relative" ref={menuRef}>
             <button
-              onClick={handleSignOut}
-              className="flex items-center space-x-1 px-3 py-1.5 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors text-sm"
+              type="button"
+              onClick={() => setMenuOpen(open => !open)}
+              aria-haspopup="menu"
+              aria-expanded={menuOpen}
+              aria-label="More actions"
+              className="btn-quiet text-ink-2 hover:text-ink"
             >
-              <LogOut className="w-4 h-4" />
-              <span className="hidden sm:block">Sign Out</span>
+              <MoreHorizontal className="h-5 w-5" aria-hidden="true" />
+              <span className="hidden md:inline">More</span>
             </button>
+            {menuOpen && (
+              <div
+                role="menu"
+                className="absolute right-0 mt-2 w-56 overflow-hidden rounded-lg border border-line bg-white py-1 shadow-card"
+              >
+                {onViewSite && (
+                  <button role="menuitem" onClick={() => { setMenuOpen(false); onViewSite(); }} className="flex w-full items-center gap-3 px-4 py-2.5 text-left text-sm text-ink hover:bg-sand">
+                    <Globe className="h-4 w-4 text-sea" aria-hidden="true" />
+                    View member site
+                  </button>
+                )}
+                {onViewIntakeForm && (
+                  <button role="menuitem" onClick={() => { setMenuOpen(false); onViewIntakeForm(); }} className="flex w-full items-center gap-3 px-4 py-2.5 text-left text-sm text-ink hover:bg-sand">
+                    <ClipboardList className="h-4 w-4 text-sea" aria-hidden="true" />
+                    Preview intake form
+                  </button>
+                )}
+                <div className="my-1 border-t border-line" role="separator" />
+                <button role="menuitem" onClick={handleSignOut} className="flex w-full items-center gap-3 px-4 py-2.5 text-left text-sm text-ink-2 hover:bg-sand hover:text-ink">
+                  <LogOut className="h-4 w-4" aria-hidden="true" />
+                  Sign out
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </header>
 
-      <main className="max-w-3xl mx-auto px-4 py-6">
+      <main className="mx-auto max-w-work px-4 py-6">
 
-        {/* ── CLIENT CARDS TAB ── */}
+        {/* ── CLIENTS TAB ── */}
         {activeTab === 'cards' && (
           <>
             {selectedClient ? (
@@ -231,10 +271,10 @@ export function AdminDashboard({ user, onViewSite, onViewIntakeForm }: AdminDash
 
         {/* ── DUE FOR REVIEW TAB ── */}
         {activeTab === 'review' && (
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
-            <div className="flex items-center space-x-2 mb-5">
-              <AlertTriangle className="w-5 h-5 text-amber-500" />
-              <h3 className="text-lg font-semibold text-gray-800">Due for Review</h3>
+          <section>
+            <div className="mb-5 border-b border-line pb-3">
+              <p className="eyebrow">Not practiced in four weeks</p>
+              <h2 className="mt-1 text-2xl">Due for review</h2>
             </div>
             <DueForReview
               onSelectClient={client => {
@@ -242,130 +282,135 @@ export function AdminDashboard({ user, onViewSite, onViewIntakeForm }: AdminDash
                 setActiveTab('cards');
               }}
             />
-          </div>
+          </section>
         )}
 
         {/* ── WAIVERS TAB ── */}
         {activeTab === 'waivers' && (
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200">
-            <div className="border-b border-gray-200 px-6 py-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-2">
-                  <FileText className="w-5 h-5 text-blue-600" />
-                  <h3 className="text-lg font-semibold text-gray-800">Client Waivers</h3>
-                  {waiversLoaded && (
-                    <span className="text-sm text-gray-400">({waivers.length})</span>
-                  )}
-                </div>
-                {waivers.length > 0 && (
-                  <button
-                    onClick={exportToCSV}
-                    className="flex items-center space-x-2 px-3 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
-                  >
-                    <Download className="w-4 h-4" />
-                    <span>Export CSV</span>
-                  </button>
-                )}
+          <section>
+            <div className="mb-5 flex items-end justify-between gap-3 border-b border-line pb-3">
+              <div>
+                <p className="eyebrow">Intake forms</p>
+                <h2 className="mt-1 text-2xl">
+                  Waivers
+                  {waiversLoaded && <span className="ml-2 font-sans text-base text-ink-3">{waivers.length}</span>}
+                </h2>
               </div>
-            </div>
-
-            <div className="p-6">
-              {loadingWaivers ? (
-                <div className="flex items-center justify-center py-12">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600" />
-                </div>
-              ) : waivers.length === 0 ? (
-                <p className="text-center text-gray-500 py-8">No client waivers submitted yet</p>
-              ) : (
-                <div className="space-y-3">
-                  {waivers.map(waiver => (
-                    <div
-                      key={waiver.id}
-                      onClick={() => setSelectedWaiver(waiver)}
-                      className="border border-gray-200 rounded-lg p-4 hover:border-blue-400 hover:shadow-md transition-all cursor-pointer"
-                    >
-                      <div className="flex items-center justify-between">
-                        <div className="flex-1">
-                          <h4 className="font-semibold text-gray-800">{waiver.full_name}</h4>
-                          <p className="text-sm text-gray-600">{waiver.email}</p>
-                          <div className="flex items-center space-x-4 mt-1 text-sm text-gray-500">
-                            <span className="flex items-center">
-                              <Calendar className="w-3.5 h-3.5 mr-1" />
-                              {formatDate(waiver.signed_at)}
-                            </span>
-                            <span>Level: {waiver.fitness_level}</span>
-                          </div>
-                        </div>
-                        <span className="text-xs text-gray-400">View →</span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
+              {waivers.length > 0 && (
+                <button onClick={exportToCSV} className="btn-secondary">
+                  <Download className="h-4 w-4" aria-hidden="true" />
+                  <span>Export CSV</span>
+                </button>
               )}
             </div>
-          </div>
+
+            {loadingWaivers ? (
+              <div className="flex items-center justify-center py-12">
+                <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-sea" />
+              </div>
+            ) : waivers.length === 0 ? (
+              <p className="py-10 text-center text-ink-3">No intake forms yet.</p>
+            ) : (
+              <ul className="divide-y divide-line rounded-lg border border-line bg-white">
+                {waivers.map(waiver => (
+                  <li key={waiver.id}>
+                    <button
+                      onClick={() => setSelectedWaiver(waiver)}
+                      className="flex w-full items-center justify-between gap-4 px-4 py-3 text-left transition-colors hover:bg-sand"
+                    >
+                      <span className="min-w-0">
+                        <span className="block truncate font-semibold text-ink">{waiver.full_name}</span>
+                        <span className="block truncate text-sm text-ink-2">{waiver.email}</span>
+                      </span>
+                      <span className="hidden flex-shrink-0 items-center gap-4 text-sm text-ink-3 sm:flex">
+                        <span className="capitalize">{waiver.fitness_level}</span>
+                        <span className="inline-flex items-center gap-1">
+                          <Calendar className="h-3.5 w-3.5" aria-hidden="true" />
+                          {formatDate(waiver.signed_at)}
+                        </span>
+                      </span>
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </section>
         )}
       </main>
 
+      {/* ── Bottom tab bar (phones) ── */}
+      <nav
+        className="fixed inset-x-0 bottom-0 z-30 flex border-t border-line bg-white/95 backdrop-blur-sm sm:hidden"
+        aria-label="Admin sections"
+        style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
+      >
+        {TABS.map(t => tabButton(t.key, 'bottom'))}
+      </nav>
+
       {/* ── Waiver Detail Modal ── */}
       {selectedWaiver && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50 overflow-y-auto">
-          <div className="bg-white rounded-2xl shadow-xl max-w-4xl w-full my-8 max-h-[90vh] overflow-y-auto">
-            <div className="sticky top-0 bg-white border-b border-gray-200 rounded-t-2xl px-8 py-6 flex items-center justify-between">
-              <h2 className="text-2xl font-light text-gray-800">Client Information</h2>
-              <button onClick={() => setSelectedWaiver(null)} className="p-2 text-gray-400 hover:text-gray-600">
-                <span className="text-2xl">&times;</span>
+        <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-ink/50 p-4">
+          <div className="my-8 max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-lg bg-white shadow-xl">
+            <div className="sticky top-0 flex items-center justify-between border-b border-line bg-white px-6 py-4">
+              <div>
+                <p className="eyebrow">Intake form</p>
+                <h2 className="text-2xl">{selectedWaiver.full_name}</h2>
+              </div>
+              <button onClick={() => setSelectedWaiver(null)} className="btn-quiet text-ink-3 hover:text-ink" aria-label="Close">
+                <X className="h-5 w-5" aria-hidden="true" />
               </button>
             </div>
-            <div className="px-8 py-6 space-y-6">
+            <div className="space-y-6 px-6 py-6 text-sm">
               <div>
-                <h3 className="text-lg font-semibold text-gray-800 mb-3">Personal Information</h3>
-                <div className="grid md:grid-cols-2 gap-4 text-sm">
-                  <div><span className="font-medium">Name:</span> {selectedWaiver.full_name}</div>
-                  <div><span className="font-medium">Email:</span> {selectedWaiver.email}</div>
-                  <div><span className="font-medium">Phone:</span> {selectedWaiver.phone}</div>
-                  <div><span className="font-medium">Date of Birth:</span> {selectedWaiver.date_of_birth}</div>
-                  <div className="md:col-span-2"><span className="font-medium">Occupation:</span> {selectedWaiver.occupation}</div>
+                <h3 className="mb-3 font-sans text-base font-semibold text-ink">About</h3>
+                <dl className="grid gap-x-6 gap-y-2 sm:grid-cols-2">
+                  <div><dt className="inline font-semibold text-ink-2">Email: </dt><dd className="inline">{selectedWaiver.email}</dd></div>
+                  <div><dt className="inline font-semibold text-ink-2">Phone: </dt><dd className="inline">{selectedWaiver.phone}</dd></div>
+                  <div><dt className="inline font-semibold text-ink-2">Date of birth: </dt><dd className="inline">{selectedWaiver.date_of_birth}</dd></div>
+                  <div><dt className="inline font-semibold text-ink-2">Occupation: </dt><dd className="inline">{selectedWaiver.occupation}</dd></div>
+                </dl>
+              </div>
+              <div>
+                <h3 className="mb-3 font-sans text-base font-semibold text-ink">Emergency contact</h3>
+                <dl className="grid gap-x-6 gap-y-2 sm:grid-cols-3">
+                  <div><dt className="inline font-semibold text-ink-2">Name: </dt><dd className="inline">{selectedWaiver.emergency_contact_name}</dd></div>
+                  <div><dt className="inline font-semibold text-ink-2">Phone: </dt><dd className="inline">{selectedWaiver.emergency_contact_phone}</dd></div>
+                  <div><dt className="inline font-semibold text-ink-2">Relationship: </dt><dd className="inline">{selectedWaiver.emergency_contact_relationship}</dd></div>
+                </dl>
+              </div>
+              <div>
+                <h3 className="mb-3 font-sans text-base font-semibold text-ink">Health</h3>
+                <div className="space-y-3">
+                  {selectedWaiver.medical_conditions && <div><span className="font-semibold text-ink-2">Medical conditions</span><br />{selectedWaiver.medical_conditions}</div>}
+                  {selectedWaiver.previous_injuries && <div><span className="font-semibold text-ink-2">Previous injuries</span><br />{selectedWaiver.previous_injuries}</div>}
+                  {selectedWaiver.current_pain && <div><span className="font-semibold text-ink-2">Current pain</span><br />{selectedWaiver.current_pain}</div>}
+                  {selectedWaiver.pregnancy_status && <div><span className="font-semibold text-ink-2">Pregnancy: </span>{selectedWaiver.pregnancy_status}</div>}
+                  {!selectedWaiver.medical_conditions && !selectedWaiver.previous_injuries && !selectedWaiver.current_pain && !selectedWaiver.pregnancy_status && (
+                    <p className="text-ink-3">Nothing reported.</p>
+                  )}
                 </div>
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-gray-800 mb-3">Emergency Contact</h3>
-                <div className="grid md:grid-cols-3 gap-4 text-sm">
-                  <div><span className="font-medium">Name:</span> {selectedWaiver.emergency_contact_name}</div>
-                  <div><span className="font-medium">Phone:</span> {selectedWaiver.emergency_contact_phone}</div>
-                  <div><span className="font-medium">Relationship:</span> {selectedWaiver.emergency_contact_relationship}</div>
-                </div>
-              </div>
-              <div>
-                <h3 className="text-lg font-semibold text-gray-800 mb-3">Medical Information</h3>
-                <div className="space-y-3 text-sm">
-                  {selectedWaiver.medical_conditions && <div><span className="font-medium">Medical Conditions:</span><br />{selectedWaiver.medical_conditions}</div>}
-                  {selectedWaiver.previous_injuries && <div><span className="font-medium">Previous Injuries:</span><br />{selectedWaiver.previous_injuries}</div>}
-                  {selectedWaiver.current_pain && <div><span className="font-medium">Current Pain:</span><br />{selectedWaiver.current_pain}</div>}
-                  {selectedWaiver.pregnancy_status && <div><span className="font-medium">Pregnancy Status:</span> {selectedWaiver.pregnancy_status}</div>}
-                </div>
-              </div>
-              <div>
-                <h3 className="text-lg font-semibold text-gray-800 mb-3">Fitness Background</h3>
-                <div className="space-y-3 text-sm">
-                  <div><span className="font-medium">Fitness Level:</span> {selectedWaiver.fitness_level}</div>
-                  {selectedWaiver.exercise_history && <div><span className="font-medium">Exercise History:</span><br />{selectedWaiver.exercise_history}</div>}
-                  {selectedWaiver.pilates_experience && <div><span className="font-medium">Pilates Experience:</span><br />{selectedWaiver.pilates_experience}</div>}
-                  <div><span className="font-medium">Fitness Goals:</span><br />{selectedWaiver.fitness_goals}</div>
+                <h3 className="mb-3 font-sans text-base font-semibold text-ink">Movement background</h3>
+                <div className="space-y-3">
+                  <div><span className="font-semibold text-ink-2">Activity level: </span><span className="capitalize">{selectedWaiver.fitness_level}</span></div>
+                  {selectedWaiver.exercise_history && <div><span className="font-semibold text-ink-2">Exercise history</span><br />{selectedWaiver.exercise_history}</div>}
+                  {selectedWaiver.pilates_experience && <div><span className="font-semibold text-ink-2">Pilates experience</span><br />{selectedWaiver.pilates_experience}</div>}
+                  <div><span className="font-semibold text-ink-2">Goals</span><br />{selectedWaiver.fitness_goals}</div>
                 </div>
               </div>
               {(selectedWaiver.preferred_schedule || selectedWaiver.how_did_you_hear || selectedWaiver.additional_notes) && (
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-800 mb-3">Additional Information</h3>
-                  <div className="space-y-3 text-sm">
-                    {selectedWaiver.preferred_schedule && <div><span className="font-medium">Preferred Schedule:</span> {selectedWaiver.preferred_schedule}</div>}
-                    {selectedWaiver.how_did_you_hear && <div><span className="font-medium">How They Heard About Us:</span> {selectedWaiver.how_did_you_hear}</div>}
-                    {selectedWaiver.additional_notes && <div><span className="font-medium">Additional Notes:</span><br />{selectedWaiver.additional_notes}</div>}
+                  <h3 className="mb-3 font-sans text-base font-semibold text-ink">Preferences</h3>
+                  <div className="space-y-3">
+                    {selectedWaiver.preferred_schedule && <div><span className="font-semibold text-ink-2">Preferred times: </span>{selectedWaiver.preferred_schedule}</div>}
+                    {selectedWaiver.how_did_you_hear && <div><span className="font-semibold text-ink-2">Heard about the studio: </span>{selectedWaiver.how_did_you_hear}</div>}
+                    {selectedWaiver.additional_notes && <div><span className="font-semibold text-ink-2">Notes</span><br />{selectedWaiver.additional_notes}</div>}
                   </div>
                 </div>
               )}
-              <div className="text-sm text-gray-500 border-t pt-4">
-                Submitted: {formatDate(selectedWaiver.signed_at)}
+              <div className="border-t border-line pt-4 text-ink-3">
+                Signed {formatDate(selectedWaiver.signed_at)}
               </div>
             </div>
           </div>

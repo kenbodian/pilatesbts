@@ -53,9 +53,10 @@ export function ClientRoster({ onSelectClient, onAddClient }: ClientRosterProps)
   const getInitials = (client: InstructorClient) =>
     `${client.first_name[0]}${client.last_name[0]}`.toUpperCase();
 
+  // Avatars stay inside the brand: tints and depths of the one accent
   const avatarColors = [
-    'bg-teal-500', 'bg-blue-500', 'bg-violet-500',
-    'bg-rose-400', 'bg-amber-500', 'bg-emerald-500',
+    'bg-sea text-white', 'bg-sea-deep text-white', 'bg-sea-tint text-sea-deep',
+    'bg-sand-deep text-ink', 'bg-ink text-white', 'bg-sand text-sea-deep',
   ];
 
   const getColor = (client: InstructorClient) =>
@@ -64,7 +65,7 @@ export function ClientRoster({ onSelectClient, onAddClient }: ClientRosterProps)
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-teal-600" />
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-sea" />
       </div>
     );
   }
@@ -74,12 +75,12 @@ export function ClientRoster({ onSelectClient, onAddClient }: ClientRosterProps)
       {/* Header row */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h2 className="text-xl font-light text-gray-800">Client Cards</h2>
-          <p className="text-sm text-gray-500 mt-0.5">{clients.length} client{clients.length !== 1 ? 's' : ''}</p>
+          <h2 className="text-2xl">Clients</h2>
+          <p className="text-sm text-ink-3 mt-0.5">{clients.length} client{clients.length !== 1 ? 's' : ''}</p>
         </div>
         <button
           onClick={onAddClient}
-          className="flex items-center space-x-2 px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition-colors text-sm font-medium"
+          className="btn-primary"
         >
           <UserPlus className="w-4 h-4" />
           <span>Add Client</span>
@@ -87,15 +88,15 @@ export function ClientRoster({ onSelectClient, onAddClient }: ClientRosterProps)
       </div>
 
       {clients.length === 0 ? (
-        <div className="text-center py-20 border-2 border-dashed border-gray-200 rounded-xl">
-          <div className="w-16 h-16 bg-teal-50 rounded-full flex items-center justify-center mx-auto mb-4">
-            <UserPlus className="w-8 h-8 text-teal-400" />
+        <div className="text-center py-20 border-2 border-dashed border-line rounded-lg">
+          <div className="w-16 h-16 bg-sea-tint rounded-full flex items-center justify-center mx-auto mb-4">
+            <UserPlus className="w-8 h-8 text-sea" />
           </div>
-          <p className="text-gray-600 font-medium mb-1">No clients yet</p>
-          <p className="text-sm text-gray-400 mb-4">Add your first client to get started</p>
+          <p className="text-ink-2 font-medium mb-1">No clients yet</p>
+          <p className="text-sm text-ink-3 mb-4">Add your first client to get started</p>
           <button
             onClick={onAddClient}
-            className="px-5 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition-colors text-sm font-medium"
+            className="btn-primary"
           >
             Add Client
           </button>
@@ -106,10 +107,10 @@ export function ClientRoster({ onSelectClient, onAddClient }: ClientRosterProps)
             <button
               key={client.id}
               onClick={() => onSelectClient(client)}
-              className="w-full flex items-center space-x-4 p-4 bg-white rounded-xl border border-gray-200 hover:border-teal-400 hover:shadow-md transition-all text-left group"
+              className="w-full flex items-center space-x-4 p-4 bg-white rounded-lg border border-line hover:border-sea hover:shadow-md transition-colors text-left group"
             >
               {/* Avatar */}
-              <div className={`w-12 h-12 rounded-full flex items-center justify-center text-white font-semibold text-sm flex-shrink-0 ${getColor(client)}`}>
+              <div className={`w-12 h-12 rounded-full flex items-center justify-center font-semibold text-sm flex-shrink-0 ${getColor(client)}`}>
                 {client.photo_url ? (
                   <img src={client.photo_url} alt="" className="w-full h-full rounded-full object-cover" />
                 ) : (
@@ -119,18 +120,18 @@ export function ClientRoster({ onSelectClient, onAddClient }: ClientRosterProps)
 
               {/* Info */}
               <div className="flex-1 min-w-0">
-                <p className="font-semibold text-gray-800 group-hover:text-teal-700 transition-colors">
+                <p className="font-semibold text-ink group-hover:text-sea-deep transition-colors">
                   {client.first_name} {client.last_name}
                 </p>
                 <div className="flex items-center space-x-3 mt-0.5">
                   {client.goals && (
-                    <p className="text-sm text-gray-500 truncate">{client.goals}</p>
+                    <p className="text-sm text-ink-3 truncate">{client.goals}</p>
                   )}
                   {client.pain_scale !== null && (
                     <span className={`text-xs px-2 py-0.5 rounded-full flex-shrink-0 ${
                       client.pain_scale >= 7 ? 'bg-red-100 text-red-700' :
                       client.pain_scale >= 4 ? 'bg-amber-100 text-amber-700' :
-                      'bg-green-100 text-green-700'
+                      'bg-sea-tint text-sea-deep'
                     }`}>
                       Pain {client.pain_scale}/10
                     </span>
@@ -140,13 +141,13 @@ export function ClientRoster({ onSelectClient, onAddClient }: ClientRosterProps)
 
               {/* Mastered count */}
               {(masteredCounts[client.id] || 0) > 0 && (
-                <div className="flex items-center space-x-1 text-green-600 flex-shrink-0">
+                <div className="flex items-center space-x-1 text-sea flex-shrink-0">
                   <Activity className="w-4 h-4" />
                   <span className="text-sm font-medium">{masteredCounts[client.id]}</span>
                 </div>
               )}
 
-              <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-teal-500 transition-colors flex-shrink-0" />
+              <ChevronRight className="w-4 h-4 text-ink-3 group-hover:text-sea transition-colors flex-shrink-0" />
             </button>
           ))}
         </div>

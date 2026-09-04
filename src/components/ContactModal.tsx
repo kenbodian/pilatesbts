@@ -106,11 +106,11 @@ export function ContactModal({
       onClick={handleClose}
     >
       <div
-        className="bg-white rounded-2xl shadow-xl max-w-lg w-full max-h-[90vh] overflow-y-auto"
+        className="bg-white rounded-lg shadow-xl max-w-lg w-full max-h-[90vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="bg-gradient-to-r from-blue-600 to-teal-600 p-6 rounded-t-2xl relative">
+        <div className="bg-sea p-6 rounded-t-lg relative">
           <button
             onClick={handleClose}
             disabled={loading}
@@ -124,8 +124,8 @@ export function ContactModal({
               <Mail className="w-6 h-6 text-white" />
             </div>
             <div>
-              <h2 className="text-2xl font-light text-white">Contact Us</h2>
-              <p className="text-blue-100 text-sm">We'd love to hear from you</p>
+              <h2 className="text-2xl text-white">Message the studio</h2>
+              <p className="text-white/80 text-sm">Noël replies within a day</p>
             </div>
           </div>
         </div>
@@ -133,7 +133,7 @@ export function ContactModal({
         {/* Form */}
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
           <div>
-            <label htmlFor="contact-subject" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="contact-subject" className="block text-sm font-medium text-ink-2 mb-1">
               Subject *
             </label>
             <input
@@ -141,17 +141,17 @@ export function ContactModal({
               id="contact-subject"
               value={subject}
               onChange={(e) => setSubject(e.target.value)}
-              className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-              placeholder="What can we help you with?"
+              className="field"
+              placeholder="Scheduling, a question about sessions, anything else"
               required
               disabled={loading}
               maxLength={100}
             />
-            <p className="text-xs text-gray-500 mt-1">{subject.length}/100</p>
+            <p className="text-xs text-ink-3 mt-1">{subject.length}/100</p>
           </div>
 
           <div>
-            <label htmlFor="contact-message" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="contact-message" className="block text-sm font-medium text-ink-2 mb-1">
               Message *
             </label>
             <textarea
@@ -159,20 +159,20 @@ export function ContactModal({
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               rows={6}
-              className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none"
-              placeholder="Tell us what's on your mind..."
+              className="field resize-none"
+              placeholder=""
               required
               disabled={loading}
               maxLength={1000}
             />
-            <p className="text-xs text-gray-500 mt-1">{message.length}/1000</p>
+            <p className="text-xs text-ink-3 mt-1">{message.length}/1000</p>
           </div>
 
-          <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
-            <p className="text-sm text-blue-800">
+          <div className="bg-sea-tint p-4 rounded border border-line">
+            <p className="text-sm text-sea-deep">
               <strong>From:</strong> {userName} ({userEmail})
             </p>
-            <p className="text-xs text-blue-600 mt-1">
+            <p className="text-xs text-sea mt-1">
               We'll send a confirmation to this email and respond within 24 hours.
             </p>
           </div>
@@ -183,14 +183,14 @@ export function ContactModal({
               type="button"
               onClick={handleClose}
               disabled={loading}
-              className="flex-1 px-4 py-2.5 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="btn-secondary flex-1"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={loading || !subject.trim() || !message.trim()}
-              className="flex-1 px-4 py-2.5 bg-gradient-to-r from-blue-600 to-teal-600 text-white rounded-lg hover:from-blue-700 hover:to-teal-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
+              className="btn-primary flex-1"
             >
               {loading ? (
                 <>

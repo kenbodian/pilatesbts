@@ -10,11 +10,11 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'masked-icon.svg'],
       manifest: {
-        name: 'Pilates BTS Studio',
-        short_name: 'Pilates BTS',
+        name: 'Pilates by the Sea',
+        short_name: 'Pilates by the Sea',
         description: 'Instructor client cards and session tracking',
-        theme_color: '#0d9488',
-        background_color: '#f9fafb',
+        theme_color: '#2E6E69',
+        background_color: '#F6F8F7',
         display: 'standalone',
         orientation: 'portrait',
         scope: '/',
@@ -40,8 +40,7 @@ export default defineConfig({
       },
       workbox: {
         // Cache the app shell and static assets — exclude large images (>500 KB)
-        globPatterns: ['**/*.{js,css,html,ico,svg,woff2}', '**/*.png'],
-        globIgnores: ['**/IMG_*.png', '**/img_*.png'],
+        globPatterns: ['**/*.{js,css,html,ico,svg,woff2}', '**/pwa-*.png'],
         maximumFileSizeToCacheInBytes: 3 * 1024 * 1024, // 3 MiB safety net
         // Cache Supabase API responses for offline browsing
         runtimeCaching: [

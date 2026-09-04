@@ -2,6 +2,53 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+  html {
+    @apply text-ink bg-foam antialiased;
+    font-size: 17px;
+  }
+  body {
+    @apply font-sans leading-relaxed;
+  }
+  h1, h2, h3 {
+    @apply font-display font-normal text-ink;
+    text-wrap: balance;
+    letter-spacing: -0.01em;
+  }
+  ::placeholder {
+    @apply text-ink-3;
+  }
+}
+
+@layer components {
+  /* Button roles. Every button on the site is one of these three. */
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded bg-sea px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-sea-deep focus:outline-none focus-visible:ring-2 focus-visible:ring-sea focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-sea;
+  }
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 rounded border border-line bg-white px-4 py-2.5 text-sm font-semibold text-ink transition-colors hover:bg-sand focus:outline-none focus-visible:ring-2 focus-visible:ring-sea focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50;
+  }
+  .btn-quiet {
+    @apply inline-flex items-center justify-center gap-2 rounded px-3 py-2 text-sm font-medium text-sea transition-colors hover:bg-sea-tint hover:text-sea-deep focus:outline-none focus-visible:ring-2 focus-visible:ring-sea disabled:cursor-not-allowed disabled:opacity-50;
+  }
+
+  /* Form fields */
+  .field {
+    @apply w-full rounded border border-line bg-white px-3 py-2.5 text-ink transition-colors placeholder:text-ink-3 focus:border-sea focus:outline-none focus:ring-2 focus:ring-sea/30 disabled:bg-sand disabled:text-ink-2 read-only:bg-sand;
+  }
+  .label {
+    @apply mb-1.5 block text-sm font-semibold text-ink-2;
+  }
+  .hint {
+    @apply mt-1.5 text-sm text-ink-3;
+  }
+
+  /* Section eyebrow, used above display headings */
+  .eyebrow {
+    @apply text-xs font-semibold uppercase tracking-[0.14em] text-ink-3;
+  }
+}
+
 @layer utilities {
   @keyframes slide-in-right {
     from {
@@ -16,5 +63,11 @@
 
   .animate-slide-in-right {
     animation: slide-in-right 0.3s ease-out;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .animate-slide-in-right {
+      animation: none;
+    }
   }
 }

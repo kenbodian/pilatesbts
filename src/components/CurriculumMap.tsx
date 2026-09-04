@@ -8,10 +8,10 @@ import { APPARATUS_LABELS, APPARATUS_ORDER } from '../types/clientCards';
 
 // ─── Status colours ───────────────────────────────────────────────────────────
 const STATUS_TILE: Record<ExerciseStatus, { bg: string; border: string; label: string }> = {
-  not_started: { bg: 'bg-gray-100',   border: 'border-gray-200',  label: 'Not started' },
+  not_started: { bg: 'bg-sand',   border: 'border-line',  label: 'Not started' },
   introduced:  { bg: 'bg-amber-200',  border: 'border-amber-300', label: 'Introduced'  },
-  developing:  { bg: 'bg-blue-200',   border: 'border-blue-300',  label: 'Developing'  },
-  mastered:    { bg: 'bg-green-300',  border: 'border-green-400', label: 'Mastered'    },
+  developing:  { bg: 'bg-line',   border: 'border-line',  label: 'Developing'  },
+  mastered:    { bg: 'bg-line',  border: 'border-sea', label: 'Mastered'    },
 };
 
 // ─── Intro timeline inside the map ───────────────────────────────────────────
@@ -30,7 +30,7 @@ function IntroTimeline({ exercises, statusMap }: IntroTimelineProps) {
 
   if (introduced.length === 0) {
     return (
-      <p className="text-sm text-gray-400 italic text-center py-6">
+      <p className="text-sm text-ink-3 italic text-center py-6">
         No exercises introduced yet. Progress will appear here as you teach.
       </p>
     );
@@ -49,16 +49,16 @@ function IntroTimeline({ exercises, statusMap }: IntroTimelineProps) {
     <div className="space-y-4">
       {Object.entries(byMonth).map(([month, exs]) => (
         <div key={month}>
-          <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">{month}</p>
-          <div className="space-y-1.5 pl-3 border-l-2 border-gray-100">
+          <p className="text-xs font-semibold text-ink-3 uppercase tracking-wider mb-2">{month}</p>
+          <div className="space-y-1.5 pl-3 border-l-2 border-sand">
             {exs.map(ex => {
               const status = statusMap[ex.id]?.status ?? 'introduced';
               const tile = STATUS_TILE[status];
               return (
                 <div key={ex.id} className="flex items-center space-x-2">
                   <span className={`w-2.5 h-2.5 rounded-sm flex-shrink-0 ${tile.bg} border ${tile.border}`} />
-                  <span className="text-sm text-gray-700">{ex.name}</span>
-                  <span className="text-xs text-gray-400 ml-auto">{ex.apparatus.replace('_', ' ')}</span>
+                  <span className="text-sm text-ink-2">{ex.name}</span>
+                  <span className="text-xs text-ink-3 ml-auto">{ex.apparatus.replace('_', ' ')}</span>
                 </div>
               );
             })}
@@ -90,36 +90,36 @@ function ApparatusProgress({ apparatus, exercises, statusMap, onSelect, selected
   return (
     <button
       onClick={() => onSelect(apparatus)}
-      className={`w-full text-left p-3 rounded-xl border transition-all ${
+      className={`w-full text-left p-3 rounded-lg border transition-colors ${
         selected
-          ? 'border-teal-400 bg-teal-50'
-          : 'border-gray-200 bg-white hover:border-gray-300'
+          ? 'border-sea bg-sea-tint'
+          : 'border-line bg-white hover:border-line'
       }`}
     >
       <div className="flex items-center justify-between mb-1.5">
-        <span className="text-sm font-medium text-gray-700">{APPARATUS_LABELS[apparatus]}</span>
-        <span className="text-xs text-gray-400">{total} ex</span>
+        <span className="text-sm font-medium text-ink-2">{APPARATUS_LABELS[apparatus]}</span>
+        <span className="text-xs text-ink-3">{total} ex</span>
       </div>
 
       {/* Stacked bar */}
       <div className="flex h-2 rounded-full overflow-hidden gap-px">
         {counts.mastered > 0 && (
-          <div className="bg-green-400 rounded-l-full" style={{ width: pct(counts.mastered) }} />
+          <div className="bg-sea rounded-l-full" style={{ width: pct(counts.mastered) }} />
         )}
         {counts.developing > 0 && (
-          <div className="bg-blue-400" style={{ width: pct(counts.developing) }} />
+          <div className="bg-sea" style={{ width: pct(counts.developing) }} />
         )}
         {counts.introduced > 0 && (
           <div className="bg-amber-300" style={{ width: pct(counts.introduced) }} />
         )}
         {counts.not_started > 0 && (
-          <div className="bg-gray-200 rounded-r-full flex-1" />
+          <div className="bg-line rounded-r-full flex-1" />
         )}
       </div>
 
       <div className="flex items-center space-x-2 mt-1">
-        {counts.mastered > 0 && <span className="text-xs text-green-600">{counts.mastered}✓</span>}
-        {counts.developing > 0 && <span className="text-xs text-blue-600">{counts.developing} devel</span>}
+        {counts.mastered > 0 && <span className="text-xs text-sea">{counts.mastered}✓</span>}
+        {counts.developing > 0 && <span className="text-xs text-sea">{counts.developing} devel</span>}
         {counts.introduced > 0 && <span className="text-xs text-amber-600">{counts.introduced} intro</span>}
       </div>
     </button>
@@ -138,7 +138,7 @@ function TileGrid({ apparatus, exercises, statusMap }: TileGridProps) {
 
   return (
     <div className="mt-3">
-      <h4 className="text-sm font-semibold text-gray-700 mb-2">{APPARATUS_LABELS[apparatus]}</h4>
+      <h4 className="text-sm font-semibold text-ink-2 mb-2">{APPARATUS_LABELS[apparatus]}</h4>
       <div className="flex flex-wrap gap-1.5">
         {exercises.map(ex => {
           const status = statusMap[ex.id]?.status ?? 'not_started';
@@ -152,14 +152,14 @@ function TileGrid({ apparatus, exercises, statusMap }: TileGridProps) {
               onMouseLeave={() => setHovered(null)}
             >
               <div
-                className={`w-6 h-6 rounded border cursor-default transition-transform hover:scale-125 ${tile.bg} ${tile.border}`}
+                className={`w-6 h-6 rounded border cursor-default transition-transform ${tile.bg} ${tile.border}`}
                 title={`${ex.name} — ${tile.label}`}
               />
               {hovered === ex.id && (
-                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 bg-gray-800 text-white text-xs rounded px-2 py-1 whitespace-nowrap z-10 pointer-events-none">
+                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 bg-ink text-white text-xs rounded px-2 py-1 whitespace-nowrap z-10 pointer-events-none">
                   {ex.name}
                   {lastPracticed && (
-                    <span className="block text-gray-400 text-[10px]">
+                    <span className="block text-ink-3 text-[10px]">
                       {new Date(lastPracticed).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                     </span>
                   )}
@@ -201,56 +201,56 @@ export function CurriculumMap({ client, exercises, statusMap, onBack }: Curricul
       <div className="flex items-center space-x-3 mb-4">
         <button
           onClick={onBack}
-          className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+          className="p-2 text-ink-3 hover:text-ink-2 hover:bg-sand rounded transition-colors"
         >
           <ArrowLeft className="w-5 h-5" />
         </button>
         <div>
-          <h2 className="text-xl font-light text-gray-800">Curriculum Map</h2>
-          <p className="text-sm text-gray-400">{client.first_name} {client.last_name}</p>
+          <h2 className="text-xl font-display font-light text-ink">Curriculum Map</h2>
+          <p className="text-sm text-ink-3">{client.first_name} {client.last_name}</p>
         </div>
       </div>
 
       {/* Overall progress */}
-      <div className="bg-white rounded-xl border border-gray-200 p-4 mb-4">
+      <div className="bg-white rounded-lg border border-line p-4 mb-4">
         <div className="flex items-end justify-between mb-2">
           <div>
-            <p className="text-3xl font-light text-gray-800">{pctComplete}<span className="text-lg text-gray-400">%</span></p>
-            <p className="text-xs text-gray-400 mt-0.5">Overall progression</p>
+            <p className="text-3xl font-display font-light text-ink">{pctComplete}<span className="text-lg text-ink-3">%</span></p>
+            <p className="text-xs text-ink-3 mt-0.5">Overall progression</p>
           </div>
           <div className="text-right text-xs space-y-0.5">
-            <p className="text-green-600 font-medium">{mastered} mastered</p>
-            <p className="text-blue-600">{developing} developing</p>
+            <p className="text-sea font-medium">{mastered} mastered</p>
+            <p className="text-sea">{developing} developing</p>
             <p className="text-amber-600">{introduced} introduced</p>
-            <p className="text-gray-400">{total - mastered - developing - introduced} not started</p>
+            <p className="text-ink-3">{total - mastered - developing - introduced} not started</p>
           </div>
         </div>
         {/* Full stacked bar */}
         <div className="flex h-3 rounded-full overflow-hidden gap-px">
-          {mastered > 0   && <div className="bg-green-400" style={{ width: `${mastered/total*100}%` }} />}
-          {developing > 0 && <div className="bg-blue-400"  style={{ width: `${developing/total*100}%` }} />}
+          {mastered > 0   && <div className="bg-sea" style={{ width: `${mastered/total*100}%` }} />}
+          {developing > 0 && <div className="bg-sea"  style={{ width: `${developing/total*100}%` }} />}
           {introduced > 0 && <div className="bg-amber-300" style={{ width: `${introduced/total*100}%` }} />}
-          <div className="bg-gray-100 flex-1" />
+          <div className="bg-sand flex-1" />
         </div>
         {/* Legend */}
         <div className="flex items-center space-x-3 mt-2">
-          {([['bg-green-400','Mastered'],['bg-blue-400','Developing'],['bg-amber-300','Introduced'],['bg-gray-200','Not started']] as [string,string][]).map(([bg, label]) => (
+          {([['bg-sea','Mastered'],['bg-sea','Developing'],['bg-amber-300','Introduced'],['bg-line','Not started']] as [string,string][]).map(([bg, label]) => (
             <div key={label} className="flex items-center space-x-1">
               <span className={`w-2.5 h-2.5 rounded-sm ${bg}`} />
-              <span className="text-xs text-gray-500">{label}</span>
+              <span className="text-xs text-ink-3">{label}</span>
             </div>
           ))}
         </div>
       </div>
 
       {/* Tab switcher */}
-      <div className="flex space-x-1 bg-gray-100 rounded-lg p-1 mb-4">
+      <div className="flex space-x-1 bg-sand rounded p-1 mb-4">
         {(['map','timeline'] as const).map(t => (
           <button
             key={t}
             onClick={() => setTab(t)}
-            className={`flex-1 py-1.5 rounded-md text-sm font-medium capitalize transition-colors ${
-              tab === t ? 'bg-white text-gray-800 shadow-sm' : 'text-gray-500 hover:text-gray-700'
+            className={`flex-1 py-1.5 rounded text-sm font-medium capitalize transition-colors ${
+              tab === t ? 'bg-white text-ink shadow-sm' : 'text-ink-3 hover:text-ink-2'
             }`}
           >
             {t === 'map' ? 'Apparatus View' : 'Intro Timeline'}
@@ -276,12 +276,12 @@ export function CurriculumMap({ client, exercises, statusMap, onBack }: Curricul
           </div>
 
           {/* Tile grid — all or selected */}
-          <div className="bg-white rounded-xl border border-gray-200 p-4">
+          <div className="bg-white rounded-lg border border-line p-4">
             <div className="flex items-center justify-between mb-1">
-              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
+              <p className="text-xs font-semibold text-ink-3 uppercase tracking-wide">
                 {selectedApparatus ? APPARATUS_LABELS[selectedApparatus] : 'All exercises'}
               </p>
-              <div className="flex items-center space-x-1 text-xs text-gray-400">
+              <div className="flex items-center space-x-1 text-xs text-ink-3">
                 <Info className="w-3 h-3" />
                 <span>Hover to see name</span>
               </div>
@@ -301,7 +301,7 @@ export function CurriculumMap({ client, exercises, statusMap, onBack }: Curricul
 
       {/* Timeline tab */}
       {tab === 'timeline' && (
-        <div className="bg-white rounded-xl border border-gray-200 p-4">
+        <div className="bg-white rounded-lg border border-line p-4">
           <IntroTimeline
             exercises={allExercises}
             statusMap={statusMap}

@@ -117,7 +117,7 @@ export function exportClientCardPDF(
     // Section heading
     doc.setFontSize(11);
     doc.setFont('helvetica', 'bold');
-    doc.setTextColor(17, 94, 89); // teal-800
+    doc.setTextColor(46, 110, 105); // sea
     doc.text(APPARATUS_LABELS[apparatus], margin, y);
     y += 2;
 

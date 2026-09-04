@@ -18,10 +18,10 @@ import { exportClientCardPDF } from '../utils/exportClientPDF';
 const STATUS_CYCLE: ExerciseStatus[] = ['not_started', 'introduced', 'developing', 'mastered'];
 
 const STATUS_STYLE: Record<ExerciseStatus, { bg: string; text: string; label: string }> = {
-  not_started: { bg: 'bg-gray-100',   text: 'text-gray-400',  label: '—'         },
+  not_started: { bg: 'bg-sand',   text: 'text-ink-3',  label: '—'         },
   introduced:  { bg: 'bg-amber-100',  text: 'text-amber-700', label: 'Intro'     },
-  developing:  { bg: 'bg-blue-100',   text: 'text-blue-700',  label: 'Devel'     },
-  mastered:    { bg: 'bg-green-100',  text: 'text-green-700', label: '✓ Mastered' },
+  developing:  { bg: 'bg-sea-tint',   text: 'text-sea-deep',  label: 'Devel'     },
+  mastered:    { bg: 'bg-sea-tint',  text: 'text-sea-deep', label: '✓ Mastered' },
 };
 
 // Exercises not done in 4+ weeks are flagged as "due for review"
@@ -45,16 +45,16 @@ function NotesPopover({ exerciseName, notes, onSave, onClose }: NotesPopoverProp
 
   return (
     <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-2xl shadow-xl w-full max-w-md">
-        <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
-          <p className="font-semibold text-gray-800 text-sm leading-tight max-w-[80%]">{exerciseName}</p>
-          <button onClick={onClose} className="p-1 text-gray-400 hover:text-gray-600">
+      <div className="bg-white rounded-lg shadow-xl w-full max-w-md">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-sand">
+          <p className="font-semibold text-ink text-sm leading-tight max-w-[80%]">{exerciseName}</p>
+          <button onClick={onClose} className="p-1 text-ink-3 hover:text-ink-2">
             <X className="w-4 h-4" />
           </button>
         </div>
         <div className="p-5">
           <textarea
-            className="w-full border border-gray-200 rounded-lg p-3 text-sm text-gray-700 resize-none focus:outline-none focus:ring-2 focus:ring-teal-400 focus:border-transparent"
+            className="w-full border border-line rounded p-3 text-sm text-ink-2 resize-none focus:outline-none focus:ring-2 focus:ring-sea focus:border-transparent"
             rows={4}
             placeholder="Add cues, modifications, or observations…"
             value={value}
@@ -62,12 +62,12 @@ function NotesPopover({ exerciseName, notes, onSave, onClose }: NotesPopoverProp
             autoFocus
           />
           <div className="flex justify-end space-x-2 mt-3">
-            <button onClick={onClose} className="px-4 py-2 text-sm text-gray-500 hover:text-gray-700">
+            <button onClick={onClose} className="px-4 py-2 text-sm text-ink-3 hover:text-ink-2">
               Cancel
             </button>
             <button
               onClick={() => { onSave(value); onClose(); }}
-              className="px-4 py-2 text-sm bg-teal-600 text-white rounded-lg hover:bg-teal-700 font-medium"
+              className="px-4 py-2 text-sm bg-sea text-white rounded hover:bg-sea-deep font-medium"
             >
               Save note
             </button>
@@ -101,20 +101,20 @@ function ExerciseRow({ exercise, statusRecord, onStatusChange, onNotesChange }: 
 
   return (
     <>
-      <div className={`flex items-center space-x-2 py-2.5 px-3 rounded-lg group hover:bg-gray-50 transition-colors ${
+      <div className={`flex items-center space-x-2 py-2.5 px-3 rounded group hover:bg-foam transition-colors ${
         status === 'mastered' ? 'opacity-70' : ''
       }`}>
         {/* Status badge — tap to cycle */}
         <button
           onClick={cycleStatus}
-          className={`flex-shrink-0 px-2.5 py-1 rounded-full text-xs font-medium transition-all hover:opacity-80 active:scale-95 ${style.bg} ${style.text}`}
+          className={`flex-shrink-0 px-2.5 py-1 rounded-full text-xs font-medium transition-colors hover:opacity-80 active:scale-95 ${style.bg} ${style.text}`}
           title={`Tap to advance: ${status}`}
         >
           {style.label}
         </button>
 
         {/* Exercise name */}
-        <span className={`flex-1 text-sm ${status === 'mastered' ? 'text-gray-400 line-through' : 'text-gray-700'}`}>
+        <span className={`flex-1 text-sm ${status === 'mastered' ? 'text-ink-3 line-through' : 'text-ink-2'}`}>
           {exercise.name}
         </span>
 
@@ -127,7 +127,7 @@ function ExerciseRow({ exercise, statusRecord, onStatusChange, onNotesChange }: 
 
         {/* Spring setting */}
         {springs && (
-          <span className="flex-shrink-0 text-xs text-gray-400 font-mono min-w-[1.5rem] text-right">
+          <span className="flex-shrink-0 text-xs text-ink-3 font-mono min-w-[1.5rem] text-right">
             {springs}
           </span>
         )}
@@ -137,8 +137,8 @@ function ExerciseRow({ exercise, statusRecord, onStatusChange, onNotesChange }: 
           onClick={() => setShowNotes(true)}
           className={`flex-shrink-0 p-1 rounded transition-colors ${
             statusRecord?.exercise_notes
-              ? 'text-teal-500 hover:text-teal-700'
-              : 'text-gray-300 opacity-0 group-hover:opacity-100 hover:text-gray-500'
+              ? 'text-sea hover:text-sea-deep'
+              : 'text-line opacity-0 group-hover:opacity-100 hover:text-ink-3'
           }`}
           title="Exercise notes"
         >
@@ -182,29 +182,29 @@ function ApparatusSection({
     <div className="mb-4">
       <button
         onClick={() => setCollapsed(c => !c)}
-        className="w-full flex items-center justify-between px-3 py-2.5 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+        className="w-full flex items-center justify-between px-3 py-2.5 bg-sand rounded hover:bg-line transition-colors"
       >
         <div className="flex items-center space-x-2">
-          <span className="font-semibold text-gray-700 text-sm">{APPARATUS_LABELS[apparatus]}</span>
-          <span className="text-xs text-gray-400">{exercises.length} exercises</span>
+          <span className="font-semibold text-ink-2 text-sm">{APPARATUS_LABELS[apparatus]}</span>
+          <span className="text-xs text-ink-3">{exercises.length} exercises</span>
         </div>
         <div className="flex items-center space-x-2">
           {masteredCount > 0 && (
-            <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-medium">
+            <span className="text-xs bg-sea-tint text-sea-deep px-2 py-0.5 rounded-full font-medium">
               {masteredCount} mastered
             </span>
           )}
           {introducedCount > 0 && (
-            <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full font-medium">
+            <span className="text-xs bg-sea-tint text-sea-deep px-2 py-0.5 rounded-full font-medium">
               {introducedCount} in progress
             </span>
           )}
-          {collapsed ? <ChevronDown className="w-4 h-4 text-gray-400" /> : <ChevronUp className="w-4 h-4 text-gray-400" />}
+          {collapsed ? <ChevronDown className="w-4 h-4 text-ink-3" /> : <ChevronUp className="w-4 h-4 text-ink-3" />}
         </div>
       </button>
 
       {!collapsed && (
-        <div className="mt-1 divide-y divide-gray-100">
+        <div className="mt-1 divide-y divide-sand">
           {exercises.map(ex => (
             <ExerciseRow
               key={ex.id}
@@ -253,49 +253,49 @@ function ClientInfoHeader({ client, onUpdateClient }: ClientInfoHeaderProps) {
 
   if (editing) {
     return (
-      <div className="bg-white rounded-xl border border-gray-200 p-4 mb-4">
+      <div className="bg-white rounded-lg border border-line p-4 mb-4">
         <div className="grid grid-cols-2 gap-3 text-sm">
           {[
             { label: 'Height', key: 'height' },
             { label: 'Weight', key: 'weight' },
           ].map(({ label, key }) => (
             <div key={key}>
-              <label className="block text-xs text-gray-500 mb-1">{label}</label>
+              <label className="block text-xs text-ink-3 mb-1">{label}</label>
               <input
-                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-400 focus:border-transparent"
+                className="w-full border border-line rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-sea focus:border-transparent"
                 value={form[key as keyof typeof form]}
                 onChange={e => setForm(f => ({ ...f, [key]: e.target.value }))}
               />
             </div>
           ))}
           <div>
-            <label className="block text-xs text-gray-500 mb-1">Pain scale (0–10)</label>
+            <label className="block text-xs text-ink-3 mb-1">Pain scale (0–10)</label>
             <input
               type="number" min="0" max="10"
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-400 focus:border-transparent"
+              className="w-full border border-line rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-sea focus:border-transparent"
               value={form.pain_scale}
               onChange={e => setForm(f => ({ ...f, pain_scale: e.target.value }))}
             />
           </div>
         </div>
         <div className="mt-3">
-          <label className="block text-xs text-gray-500 mb-1">Goals</label>
-          <textarea rows={2} className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-400 focus:border-transparent resize-none"
+          <label className="block text-xs text-ink-3 mb-1">Goals</label>
+          <textarea rows={2} className="w-full border border-line rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-sea focus:border-transparent resize-none"
             value={form.goals} onChange={e => setForm(f => ({ ...f, goals: e.target.value }))} />
         </div>
         <div className="mt-3">
-          <label className="block text-xs text-gray-500 mb-1">Injuries / Considerations</label>
-          <textarea rows={2} className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-400 focus:border-transparent resize-none"
+          <label className="block text-xs text-ink-3 mb-1">Injuries / Considerations</label>
+          <textarea rows={2} className="w-full border border-line rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-sea focus:border-transparent resize-none"
             value={form.injuries} onChange={e => setForm(f => ({ ...f, injuries: e.target.value }))} />
         </div>
         <div className="mt-3">
-          <label className="block text-xs text-gray-500 mb-1">General notes</label>
-          <textarea rows={2} className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-400 focus:border-transparent resize-none"
+          <label className="block text-xs text-ink-3 mb-1">General notes</label>
+          <textarea rows={2} className="w-full border border-line rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-sea focus:border-transparent resize-none"
             value={form.notes} onChange={e => setForm(f => ({ ...f, notes: e.target.value }))} />
         </div>
         <div className="flex justify-end space-x-2 mt-4">
-          <button onClick={() => setEditing(false)} className="px-4 py-2 text-sm text-gray-500 hover:text-gray-700">Cancel</button>
-          <button onClick={save} className="px-4 py-2 text-sm bg-teal-600 text-white rounded-lg hover:bg-teal-700 font-medium">Save</button>
+          <button onClick={() => setEditing(false)} className="px-4 py-2 text-sm text-ink-3 hover:text-ink-2">Cancel</button>
+          <button onClick={save} className="px-4 py-2 text-sm bg-sea text-white rounded hover:bg-sea-deep font-medium">Save</button>
         </div>
       </div>
     );
@@ -303,36 +303,36 @@ function ClientInfoHeader({ client, onUpdateClient }: ClientInfoHeaderProps) {
 
   return (
     <div
-      className="bg-white rounded-xl border border-gray-200 p-4 mb-4 cursor-pointer hover:border-teal-300 transition-colors"
+      className="bg-white rounded-lg border border-line p-4 mb-4 cursor-pointer hover:border-line transition-colors"
       onClick={() => setEditing(true)}
       title="Click to edit"
     >
       <div className="flex flex-wrap gap-3 text-sm">
         {client.height && (
-          <span className="text-gray-600"><span className="font-medium text-gray-400 text-xs uppercase tracking-wide mr-1">Ht</span>{client.height}</span>
+          <span className="text-ink-2"><span className="font-medium text-ink-3 text-xs uppercase tracking-wide mr-1">Ht</span>{client.height}</span>
         )}
         {client.weight && (
-          <span className="text-gray-600"><span className="font-medium text-gray-400 text-xs uppercase tracking-wide mr-1">Wt</span>{client.weight}</span>
+          <span className="text-ink-2"><span className="font-medium text-ink-3 text-xs uppercase tracking-wide mr-1">Wt</span>{client.weight}</span>
         )}
         {client.pain_scale !== null && (
           <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${
             client.pain_scale >= 7 ? 'bg-red-100 text-red-700' :
             client.pain_scale >= 4 ? 'bg-amber-100 text-amber-700' :
-            'bg-green-100 text-green-700'
+            'bg-sea-tint text-sea-deep'
           }`}>Pain {client.pain_scale}/10</span>
         )}
       </div>
       {client.goals && (
-        <p className="text-sm text-gray-600 mt-2"><span className="font-medium text-gray-500">Goals:</span> {client.goals}</p>
+        <p className="text-sm text-ink-2 mt-2"><span className="font-medium text-ink-3">Goals:</span> {client.goals}</p>
       )}
       {client.injuries && (
         <p className="text-sm text-amber-700 mt-1"><span className="font-medium">⚠ </span>{client.injuries}</p>
       )}
       {client.notes && (
-        <p className="text-sm text-gray-500 mt-1 italic">{client.notes}</p>
+        <p className="text-sm text-ink-3 mt-1 italic">{client.notes}</p>
       )}
       {!client.height && !client.goals && !client.injuries && (
-        <p className="text-sm text-gray-400 italic">Tap to add client info (height, weight, goals, injuries…)</p>
+        <p className="text-sm text-ink-3 italic">Tap to add client info (height, weight, goals, injuries…)</p>
       )}
     </div>
   );
@@ -508,7 +508,7 @@ export function ClientCard({ client: initialClient, instructorId, onBack }: Clie
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-teal-600" />
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-sea" />
       </div>
     );
   }
@@ -548,12 +548,12 @@ export function ClientCard({ client: initialClient, instructorId, onBack }: Clie
       <div className="flex items-center space-x-3 mb-4">
         <button
           onClick={onBack}
-          className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+          className="p-2 text-ink-3 hover:text-ink-2 hover:bg-sand rounded transition-colors"
         >
           <ArrowLeft className="w-5 h-5" />
         </button>
         <div>
-          <h2 className="text-xl font-light text-gray-800">
+          <h2 className="text-xl font-display font-light text-ink">
             {client.first_name} {client.last_name}
           </h2>
         </div>
@@ -563,14 +563,14 @@ export function ClientCard({ client: initialClient, instructorId, onBack }: Clie
       <div className="flex space-x-2 mb-4">
         <button
           onClick={() => setView('session')}
-          className="flex-1 flex items-center justify-center space-x-2 px-4 py-2.5 bg-teal-600 text-white rounded-lg text-sm font-medium hover:bg-teal-700 transition-colors"
+          className="flex-1 flex items-center justify-center space-x-2 px-4 py-2.5 bg-sea text-white rounded text-sm font-medium hover:bg-sea-deep transition-colors"
         >
           <Play className="w-4 h-4" />
           <span>Start Session</span>
         </button>
         <button
           onClick={() => setView('map')}
-          className="flex items-center justify-center space-x-1.5 px-3 py-2.5 bg-gray-100 text-gray-600 rounded-lg text-sm font-medium hover:bg-gray-200 transition-colors"
+          className="flex items-center justify-center space-x-1.5 px-3 py-2.5 bg-sand text-ink-2 rounded text-sm font-medium hover:bg-line transition-colors"
           title="Curriculum Map"
         >
           <Map className="w-4 h-4" />
@@ -578,10 +578,10 @@ export function ClientCard({ client: initialClient, instructorId, onBack }: Clie
         </button>
         <button
           onClick={() => setView(view === 'history' ? 'card' : 'history')}
-          className={`flex items-center justify-center space-x-1.5 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+          className={`flex items-center justify-center space-x-1.5 px-3 py-2.5 rounded text-sm font-medium transition-colors ${
             view === 'history'
-              ? 'bg-blue-100 text-blue-700'
-              : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+              ? 'bg-sea-tint text-sea-deep'
+              : 'bg-sand text-ink-2 hover:bg-line'
           }`}
           title="Session History"
         >
@@ -590,7 +590,7 @@ export function ClientCard({ client: initialClient, instructorId, onBack }: Clie
         </button>
         <button
           onClick={() => exportClientCardPDF(client, exercises, statusMap)}
-          className="flex items-center justify-center px-3 py-2.5 bg-gray-100 text-gray-600 rounded-lg hover:bg-gray-200 transition-colors"
+          className="flex items-center justify-center px-3 py-2.5 bg-sand text-ink-2 rounded hover:bg-line transition-colors"
           title="Export PDF"
         >
           <Download className="w-4 h-4" />
@@ -600,24 +600,24 @@ export function ClientCard({ client: initialClient, instructorId, onBack }: Clie
       {/* Session history panel */}
       {view === 'history' && (
         <div className="mb-4">
-          <h3 className="text-sm font-semibold text-gray-600 mb-3">Session History</h3>
+          <h3 className="text-sm font-semibold text-ink-2 mb-3">Session History</h3>
           <SessionHistory clientId={client.id} />
         </div>
       )}
 
       {/* Stats row */}
       <div className="grid grid-cols-3 gap-3 mb-4">
-        <div className="bg-white rounded-xl border border-gray-200 p-3 text-center">
-          <p className="text-2xl font-light text-gray-700">{totalCount}</p>
-          <p className="text-xs text-gray-400 mt-0.5">Exercises</p>
+        <div className="bg-white rounded-lg border border-line p-3 text-center">
+          <p className="text-2xl font-display font-light text-ink-2">{totalCount}</p>
+          <p className="text-xs text-ink-3 mt-0.5">Exercises</p>
         </div>
-        <div className="bg-white rounded-xl border border-gray-200 p-3 text-center">
-          <p className="text-2xl font-light text-blue-600">{inProgressCount}</p>
-          <p className="text-xs text-gray-400 mt-0.5">In Progress</p>
+        <div className="bg-white rounded-lg border border-line p-3 text-center">
+          <p className="text-2xl font-display font-light text-sea">{inProgressCount}</p>
+          <p className="text-xs text-ink-3 mt-0.5">In Progress</p>
         </div>
-        <div className="bg-white rounded-xl border border-gray-200 p-3 text-center">
-          <p className="text-2xl font-light text-green-600">{masteredCount}</p>
-          <p className="text-xs text-gray-400 mt-0.5">Mastered</p>
+        <div className="bg-white rounded-lg border border-line p-3 text-center">
+          <p className="text-2xl font-display font-light text-sea">{masteredCount}</p>
+          <p className="text-xs text-ink-3 mt-0.5">Mastered</p>
         </div>
       </div>
 
@@ -634,8 +634,8 @@ export function ClientCard({ client: initialClient, instructorId, onBack }: Clie
             {style.label}
           </span>
         ))}
-        <span className="text-xs text-gray-400 ml-1">← tap to advance</span>
-        <span className="ml-auto text-xs text-gray-400 flex items-center space-x-1">
+        <span className="text-xs text-ink-3 ml-1">← tap to advance</span>
+        <span className="ml-auto text-xs text-ink-3 flex items-center space-x-1">
           <AlertTriangle className="w-3 h-3 text-amber-400" />
           <span>= due for review</span>
         </span>
@@ -645,10 +645,10 @@ export function ClientCard({ client: initialClient, instructorId, onBack }: Clie
       <div className="flex space-x-2 mb-4 overflow-x-auto pb-1 scrollbar-hide">
         <button
           onClick={() => setActiveApparatus('all')}
-          className={`flex-shrink-0 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+          className={`flex-shrink-0 px-3 py-1.5 rounded text-xs font-medium transition-colors ${
             activeApparatus === 'all'
-              ? 'bg-teal-600 text-white'
-              : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+              ? 'bg-sea text-white'
+              : 'bg-sand text-ink-2 hover:bg-line'
           }`}
         >
           All
@@ -657,10 +657,10 @@ export function ClientCard({ client: initialClient, instructorId, onBack }: Clie
           <button
             key={a}
             onClick={() => setActiveApparatus(a)}
-            className={`flex-shrink-0 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+            className={`flex-shrink-0 px-3 py-1.5 rounded text-xs font-medium transition-colors ${
               activeApparatus === a
-                ? 'bg-teal-600 text-white'
-                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                ? 'bg-sea text-white'
+                : 'bg-sand text-ink-2 hover:bg-line'
             }`}
           >
             {APPARATUS_LABELS[a]}
@@ -686,7 +686,7 @@ export function ClientCard({ client: initialClient, instructorId, onBack }: Clie
 
       {/* Saving indicator */}
       {savingIds.size > 0 && (
-        <div className="fixed bottom-4 right-4 bg-gray-800 text-white text-xs px-3 py-2 rounded-full shadow-lg flex items-center space-x-1.5 opacity-80">
+        <div className="fixed bottom-4 right-4 bg-ink text-white text-xs px-3 py-2 rounded-full shadow-lg flex items-center space-x-1.5 opacity-80">
           <div className="animate-spin rounded-full h-3 w-3 border-b border-white" />
           <span>Saving…</span>
         </div>
