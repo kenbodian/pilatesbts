@@ -5,14 +5,12 @@ interface StudioContentProps {
   heading?: string;
   subheading?: string;
   onMessageClick?: () => void;
-  showBooking?: boolean;
 }
 
 export function StudioContent({
   heading = 'Classical Pilates on the Florida coast',
   subheading = 'Private sessions with Noël Bethea in an instructor-owned studio in Ormond by the Sea.',
   onMessageClick,
-  showBooking = true,
 }: StudioContentProps) {
   return (
     <>
@@ -218,31 +216,29 @@ export function StudioContent({
         </div>
       </div>
 
-      <div className={`grid gap-6 mb-8 ${showBooking ? 'md:grid-cols-3' : 'md:grid-cols-2'}`}>
-        {showBooking && (
-          <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
-            <div className="flex items-center space-x-3 mb-3">
-              <div className="w-10 h-10 bg-teal-100 rounded-full flex items-center justify-center">
-                <Calendar className="w-5 h-5 text-teal-600" />
-              </div>
-              <h3 className="font-semibold text-gray-800">Book Your Session</h3>
+      <div className="grid gap-6 mb-8 md:grid-cols-3">
+        <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
+          <div className="flex items-center space-x-3 mb-3">
+            <div className="w-10 h-10 bg-teal-100 rounded-full flex items-center justify-center">
+              <Calendar className="w-5 h-5 text-teal-600" />
             </div>
-            <p className="text-gray-600 text-sm leading-relaxed mb-4">
-              Schedule your personalized Pilates session at a time that works for you.
-            </p>
-            <div className="mt-4">
-              <a
-                href={BUSINESS_INFO.links.calendar}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-600 to-teal-600 text-white text-sm font-medium rounded-lg hover:from-blue-700 hover:to-teal-700 transition-colors"
-              >
-                <Calendar className="w-4 h-4 mr-2" />
-                Open Calendar
-              </a>
-            </div>
+            <h3 className="font-semibold text-gray-800">Book Your Session</h3>
           </div>
-        )}
+          <p className="text-gray-600 text-sm leading-relaxed mb-4">
+            Schedule your personalized Pilates session at a time that works for you.
+          </p>
+          <div className="mt-4">
+            <a
+              href={BUSINESS_INFO.links.calendar}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-600 to-teal-600 text-white text-sm font-medium rounded-lg hover:from-blue-700 hover:to-teal-700 transition-colors"
+            >
+              <Calendar className="w-4 h-4 mr-2" />
+              Open Calendar
+            </a>
+          </div>
+        </div>
 
         <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
           <div className="flex items-center space-x-3 mb-3">
