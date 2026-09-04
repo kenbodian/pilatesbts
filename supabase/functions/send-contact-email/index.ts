@@ -1,10 +1,37 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
+import { createClient } from "npm:@supabase/supabase-js@2";
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Methods": "POST, OPTIONS",
-  "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Client-Info, Apikey",
-};
+const defaultAllowedOrigins = [
+  "https://pilatesbts.com",
+  "https://www.pilatesbts.com",
+  "https://pilatesbts.vercel.app",
+];
+
+// Comma-separated override, e.g. to add a preview deployment.
+const allowedOrigins = (Deno.env.get("ALLOWED_ORIGINS") || defaultAllowedOrigins.join(","))
+  .split(",")
+  .map((origin) => origin.trim())
+  .filter(Boolean);
+
+// Echo the caller's origin only when it is on the allow-list.
+function corsHeadersFor(req: Request): Record<string, string> {
+  const origin = req.headers.get("Origin") ?? "";
+  return {
+    "Access-Control-Allow-Origin": allowedOrigins.includes(origin) ? origin : allowedOrigins[0],
+    "Access-Control-Allow-Methods": "POST, OPTIONS",
+    "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Client-Info, Apikey",
+    "Vary": "Origin",
+  };
+}
+
+function escapeHtml(str: string): string {
+  return str
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
 
 interface ContactEmailPayload {
   userEmail: string;
@@ -14,6 +41,8 @@ interface ContactEmailPayload {
 }
 
 Deno.serve(async (req: Request) => {
+  const corsHeaders = corsHeadersFor(req);
+
   if (req.method === "OPTIONS") {
     return new Response(null, {
       status: 200,
@@ -22,6 +51,29 @@ Deno.serve(async (req: Request) => {
   }
 
   try {
+    // Validate JWT and get authenticated user
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      return new Response(
+        JSON.stringify({ success: false, error: "Missing authorization" }),
+        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+    const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
+    const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+      global: { headers: { Authorization: authHeader } },
+    });
+
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    if (authError || !user) {
+      return new Response(
+        JSON.stringify({ success: false, error: "Invalid or expired token" }),
+        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
     const { userEmail, userName, subject, message }: ContactEmailPayload = await req.json();
 
     // Validate required fields
@@ -41,6 +93,17 @@ Deno.serve(async (req: Request) => {
       );
     }
 
+    // Enforce server-side length limits
+    if (subject.length > 200 || message.length > 2000 || userName.length > 200) {
+      return new Response(
+        JSON.stringify({ success: false, error: "Input exceeds maximum length" }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // Use the authenticated user's email, not the one from the payload
+    const verifiedEmail = user.email!;
+
     const resendApiKey = Deno.env.get("RESEND_API_KEY");
     const adminEmail = Deno.env.get("ADMIN_EMAIL") || "pilatesbts@gmail.com";
 
@@ -58,8 +121,8 @@ Deno.serve(async (req: Request) => {
       body: JSON.stringify({
         from: "Pilates by the Sea <onboarding@resend.dev>",
         to: [adminEmail],
-        replyTo: userEmail,
-        subject: `Contact Form: ${subject}`,
+        replyTo: verifiedEmail,
+        subject: `Contact Form: ${escapeHtml(subject)}`,
         html: `
           <!DOCTYPE html>
           <html>
@@ -75,24 +138,24 @@ Deno.serve(async (req: Request) => {
               <div style="background: #ffffff; padding: 30px; border: 1px solid #e5e7eb; border-top: none; border-radius: 0 0 10px 10px;">
                 <div style="background: #f0f9ff; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #0d9488;">
                   <p style="margin: 0 0 10px 0; font-size: 14px;">
-                    <strong>From:</strong> ${userName}
+                    <strong>From:</strong> ${escapeHtml(userName)}
                   </p>
                   <p style="margin: 0 0 10px 0; font-size: 14px;">
-                    <strong>Email:</strong> <a href="mailto:${userEmail}" style="color: #0d9488;">${userEmail}</a>
+                    <strong>Email:</strong> <a href="mailto:${escapeHtml(verifiedEmail)}" style="color: #0d9488;">${escapeHtml(verifiedEmail)}</a>
                   </p>
                   <p style="margin: 0; font-size: 14px;">
-                    <strong>Subject:</strong> ${subject}
+                    <strong>Subject:</strong> ${escapeHtml(subject)}
                   </p>
                 </div>
 
                 <div style="background: #f9fafb; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
                   <h3 style="margin: 0 0 15px 0; font-size: 16px; color: #1f2937;">Message:</h3>
-                  <p style="margin: 0; font-size: 15px; line-height: 1.6; white-space: pre-wrap;">${message}</p>
+                  <p style="margin: 0; font-size: 15px; line-height: 1.6; white-space: pre-wrap;">${escapeHtml(message)}</p>
                 </div>
 
                 <div style="padding: 15px; background: #fef3c7; border-radius: 8px; border-left: 4px solid #f59e0b;">
                   <p style="margin: 0; font-size: 13px; color: #92400e;">
-                    <strong>💡 Tip:</strong> You can reply directly to this email to respond to ${userName}.
+                    <strong>💡 Tip:</strong> You can reply directly to this email to respond to ${escapeHtml(userName)}.
                   </p>
                 </div>
 
@@ -125,7 +188,7 @@ Deno.serve(async (req: Request) => {
       },
       body: JSON.stringify({
         from: "Pilates by the Sea <onboarding@resend.dev>",
-        to: [userEmail],
+        to: [verifiedEmail],
         subject: "We received your message - Pilates by the Sea",
         html: `
           <!DOCTYPE html>
@@ -140,7 +203,7 @@ Deno.serve(async (req: Request) => {
               </div>
 
               <div style="background: #ffffff; padding: 30px; border: 1px solid #e5e7eb; border-top: none; border-radius: 0 0 10px 10px;">
-                <p style="font-size: 16px; margin-bottom: 20px;">Hi ${userName},</p>
+                <p style="font-size: 16px; margin-bottom: 20px;">Hi ${escapeHtml(userName)},</p>
 
                 <p style="font-size: 16px; margin-bottom: 20px;">
                   Thank you for contacting Pilates by the Sea. We've received your message and will get back to you as soon as possible.
@@ -151,7 +214,7 @@ Deno.serve(async (req: Request) => {
                     <strong>Your Message:</strong>
                   </p>
                   <p style="margin: 0; font-size: 14px; color: #1e40af;">
-                    Subject: ${subject}
+                    Subject: ${escapeHtml(subject)}
                   </p>
                 </div>
 
@@ -203,7 +266,7 @@ Deno.serve(async (req: Request) => {
     return new Response(
       JSON.stringify({
         success: false,
-        error: error.message || "Failed to send message. Please try again."
+        error: "Failed to send message. Please try again."
       }),
       {
         status: 500,
