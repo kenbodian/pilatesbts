@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { MapPin, Phone, LogOut, Waves, Calendar, MessageCircle } from 'lucide-react';
+import { MapPin, Phone, LogOut, Waves, Calendar, MessageCircle, Shield } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { ContactModal } from './ContactModal';
 import { useToast } from '../hooks/useToast';
@@ -8,9 +8,13 @@ import { BUSINESS_INFO, getPhoneLink, getEmailLink } from '../config/business';
 
 interface DashboardProps {
   user: any;
+  /** True when the signed-in user has the admin role. */
+  isAdmin?: boolean;
+  /** Return to the admin dashboard (only supplied for admins). */
+  onBackToAdmin?: () => void;
 }
 
-export function Dashboard({ user }: DashboardProps) {
+export function Dashboard({ user, isAdmin = false, onBackToAdmin }: DashboardProps) {
   const [isContactModalOpen, setIsContactModalOpen] = useState(false);
   const { toasts, removeToast, success, error } = useToast();
 
@@ -43,6 +47,16 @@ export function Dashboard({ user }: DashboardProps) {
             </div>
           </div>
           <div className="flex items-center space-x-2">
+            {isAdmin && onBackToAdmin && (
+              <button
+                onClick={onBackToAdmin}
+                className="flex items-center space-x-2 px-4 py-2 text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-lg transition-colors"
+                title="Back to Admin Dashboard"
+              >
+                <Shield className="w-4 h-4" />
+                <span className="text-sm hidden sm:inline">Admin</span>
+              </button>
+            )}
             <button
               onClick={() => setIsContactModalOpen(true)}
               className="flex items-center space-x-2 px-4 py-2 text-teal-600 hover:text-teal-800 hover:bg-teal-50 rounded-lg transition-colors"

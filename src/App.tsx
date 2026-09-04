@@ -77,7 +77,8 @@ function App() {
 
   const handleWaiverComplete = () => {
     setHasWaiver(true);
-    setAppState('dashboard');
+    // Admins previewing the intake form go back to the admin dashboard
+    setAppState(isAdmin ? 'admin' : 'dashboard');
   };
 
   if (loading || checkingUserData) {
@@ -100,12 +101,26 @@ function App() {
           <WaiverForm
             onComplete={handleWaiverComplete}
             userEmail={user?.email || ''}
+            previewMode={isAdmin}
+            onBackToAdmin={isAdmin ? () => setAppState('admin') : undefined}
           />
         );
       case 'admin':
-        return <AdminDashboard user={user} />;
+        return (
+          <AdminDashboard
+            user={user}
+            onViewSite={() => setAppState('dashboard')}
+            onViewIntakeForm={() => setAppState('waiver')}
+          />
+        );
       case 'dashboard':
-        return <Dashboard user={user} />;
+        return (
+          <Dashboard
+            user={user}
+            isAdmin={isAdmin}
+            onBackToAdmin={isAdmin ? () => setAppState('admin') : undefined}
+          />
+        );
       default:
         return <AuthPage />;
     }

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { FileText, Save, LogOut } from 'lucide-react';
+import { FileText, Save, LogOut, ArrowLeft, Eye } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { handleError, logError, isValidPhone, formatPhoneNumber } from '../utils/errorHandling';
 import { useToast } from '../hooks/useToast';
@@ -8,9 +8,16 @@ import { ToastContainer } from './Toast';
 interface WaiverFormProps {
   onComplete: () => void;
   userEmail: string;
+  /**
+   * Read-only preview for admins. Submitting would file the waiver under the
+   * admin's own account, so saving is disabled in this mode.
+   */
+  previewMode?: boolean;
+  /** Return to the admin dashboard (only supplied for admins). */
+  onBackToAdmin?: () => void;
 }
 
-export function WaiverForm({ onComplete, userEmail }: WaiverFormProps) {
+export function WaiverForm({ onComplete, userEmail, previewMode = false, onBackToAdmin }: WaiverFormProps) {
   const [formData, setFormData] = useState({
     fullName: '',
     email: userEmail,
@@ -90,6 +97,8 @@ export function WaiverForm({ onComplete, userEmail }: WaiverFormProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    // Admin preview: never write a client's form under the admin's account
+    if (previewMode) return;
     setLoading(true);
 
     try {
@@ -179,6 +188,16 @@ export function WaiverForm({ onComplete, userEmail }: WaiverFormProps) {
       <div className="max-w-4xl mx-auto">
         <div className="bg-white rounded-2xl shadow-lg p-8">
           <div className="relative">
+            {onBackToAdmin && (
+              <button
+                onClick={onBackToAdmin}
+                className="absolute top-0 left-0 p-2 text-blue-600 hover:text-blue-800 transition-colors flex items-center gap-2 text-sm"
+                title="Back to Admin Dashboard"
+              >
+                <ArrowLeft className="w-4 h-4" />
+                <span className="hidden sm:inline">Back to Admin</span>
+              </button>
+            )}
             <button
               onClick={handleSignOut}
               className="absolute top-0 right-0 p-2 text-gray-500 hover:text-gray-700 transition-colors flex items-center gap-2 text-sm"
@@ -199,6 +218,20 @@ export function WaiverForm({ onComplete, userEmail }: WaiverFormProps) {
                 {existingForm ? 'Update your information below' : 'Please complete this form before accessing your member dashboard'}
               </p>
             </div>
+
+            {previewMode && (
+              <div className="mb-8 flex items-start gap-3 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3">
+                <Eye className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
+                <div className="text-sm text-amber-800">
+                  <p className="font-medium">Preview mode</p>
+                  <p>
+                    This is the form clients see when they sign up. Saving is disabled here,
+                    because a submission would be filed under your admin account rather than
+                    the client's.
+                  </p>
+                </div>
+              </div>
+            )}
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-8">
@@ -535,7 +568,7 @@ export function WaiverForm({ onComplete, userEmail }: WaiverFormProps) {
 
             <button
               type="submit"
-              disabled={loading || !formData.agreed}
+              disabled={loading || !formData.agreed || previewMode}
               className="w-full bg-gradient-to-r from-blue-600 to-teal-600 text-white py-3 px-4 rounded-lg font-medium hover:from-blue-700 hover:to-teal-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transform transition-all duration-200 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center"
             >
               {loading ? (
@@ -546,7 +579,7 @@ export function WaiverForm({ onComplete, userEmail }: WaiverFormProps) {
               ) : (
                 <>
                   <Save className="w-5 h-5 mr-2" />
-                  Complete Waiver & Continue
+                  {previewMode ? 'Saving disabled in preview' : 'Complete Waiver & Continue'}
                 </>
               )}
             </button>
