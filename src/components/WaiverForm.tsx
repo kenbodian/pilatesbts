@@ -140,6 +140,24 @@ export function WaiverForm({ onComplete, userEmail, previewMode = false, onBackT
 
   const goBack = () => goTo(Math.max(step - 1, 0));
 
+  const notifyStudio = async (event: 'submitted' | 'updated') => {
+    try {
+      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!supabaseUrl || !session) return;
+      await fetch(`${supabaseUrl}/functions/v1/send-intake-notification`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify({ event }),
+      });
+    } catch (notifyError) {
+      console.warn('Intake notification could not be sent:', notifyError);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -215,6 +233,9 @@ export function WaiverForm({ onComplete, userEmail, previewMode = false, onBackT
 
         success('Intake form saved. Welcome to the studio.');
       }
+
+      // Let Noël know. The email is a courtesy, so a failure never blocks the client.
+      notifyStudio(existingForm ? 'updated' : 'submitted');
 
       onComplete();
     } catch (error: unknown) {
