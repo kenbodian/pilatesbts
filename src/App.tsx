@@ -27,12 +27,14 @@ function LoadingScreen() {
 function MemberArea() {
   const { user, loading } = useAuth();
   const [memberView, setMemberView] = useState<MemberView | null>(null);
+  const [isAdmin, setIsAdmin] = useState(false);
   const [checkingUserData, setCheckingUserData] = useState(false);
 
   useEffect(() => {
     const checkUserData = async () => {
       if (!user) {
         setMemberView(null);
+        setIsAdmin(false);
         return;
       }
 
@@ -55,6 +57,8 @@ function MemberArea() {
         const adminStatus = adminResult.data?.role === 'admin' && !adminResult.error;
         const waiverStatus = !!waiverResult.data && !waiverResult.error;
 
+        setIsAdmin(adminStatus);
+
         if (adminStatus) {
           setMemberView('admin');
         } else if (!waiverStatus) {
@@ -66,6 +70,7 @@ function MemberArea() {
         const appError = handleError(error);
         logError(appError, 'App.checkUserData');
         setMemberView(null);
+        setIsAdmin(false);
       } finally {
         setCheckingUserData(false);
       }
@@ -73,6 +78,13 @@ function MemberArea() {
 
     checkUserData();
   }, [user]);
+
+  const handleWaiverComplete = () => {
+    // Admins previewing the intake form go back to the admin dashboard
+    setMemberView(isAdmin ? 'admin' : 'dashboard');
+  };
+
+  const backToAdmin = isAdmin ? () => setMemberView('admin') : undefined;
 
   if (loading || checkingUserData) {
     return <LoadingScreen />;
@@ -86,8 +98,10 @@ function MemberArea() {
     return (
       <>
         <WaiverForm
-          onComplete={() => setMemberView('dashboard')}
+          onComplete={handleWaiverComplete}
           userEmail={user.email || ''}
+          previewMode={isAdmin}
+          onBackToAdmin={backToAdmin}
         />
         <InstallBanner />
       </>
@@ -97,9 +111,13 @@ function MemberArea() {
   return (
     <>
       {memberView === 'admin' ? (
-        <AdminDashboard user={user} />
+        <AdminDashboard
+          user={user}
+          onViewSite={() => setMemberView('dashboard')}
+          onViewIntakeForm={() => setMemberView('waiver')}
+        />
       ) : (
-        <Dashboard user={user} />
+        <Dashboard user={user} isAdmin={isAdmin} onBackToAdmin={backToAdmin} />
       )}
       <InstallBanner />
     </>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Shield, FileText, LogOut, Download, Calendar, CreditCard, AlertTriangle } from 'lucide-react';
+import { Shield, FileText, LogOut, Download, Calendar, CreditCard, AlertTriangle, Globe, ClipboardList } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { ClientRoster } from './ClientRoster';
 import { ClientCard } from './ClientCard';
@@ -9,6 +9,10 @@ import type { InstructorClient } from '../types/clientCards';
 
 interface AdminDashboardProps {
   user: any;
+  /** Switch to the member-facing site (studio info, services, contact). */
+  onViewSite?: () => void;
+  /** Open the client intake form in read-only preview mode. */
+  onViewIntakeForm?: () => void;
 }
 
 interface Waiver {
@@ -37,7 +41,7 @@ interface Waiver {
 
 type Tab = 'cards' | 'review' | 'waivers';
 
-export function AdminDashboard({ user }: AdminDashboardProps) {
+export function AdminDashboard({ user, onViewSite, onViewIntakeForm }: AdminDashboardProps) {
   const [activeTab, setActiveTab] = useState<Tab>('cards');
 
   // ── Client Cards state ──
@@ -160,13 +164,35 @@ export function AdminDashboard({ user }: AdminDashboardProps) {
             </button>
           </div>
 
-          <button
-            onClick={handleSignOut}
-            className="flex items-center space-x-1 px-3 py-1.5 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors text-sm"
-          >
-            <LogOut className="w-4 h-4" />
-            <span className="hidden sm:block">Sign Out</span>
-          </button>
+          <div className="flex items-center space-x-1">
+            {onViewSite && (
+              <button
+                onClick={onViewSite}
+                title="View the member site"
+                className="flex items-center space-x-1 px-3 py-1.5 text-teal-600 hover:text-teal-800 hover:bg-teal-50 rounded-lg transition-colors text-sm"
+              >
+                <Globe className="w-4 h-4" />
+                <span className="hidden lg:block">View Site</span>
+              </button>
+            )}
+            {onViewIntakeForm && (
+              <button
+                onClick={onViewIntakeForm}
+                title="Preview the client intake form"
+                className="flex items-center space-x-1 px-3 py-1.5 text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-lg transition-colors text-sm"
+              >
+                <ClipboardList className="w-4 h-4" />
+                <span className="hidden lg:block">Intake Form</span>
+              </button>
+            )}
+            <button
+              onClick={handleSignOut}
+              className="flex items-center space-x-1 px-3 py-1.5 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors text-sm"
+            >
+              <LogOut className="w-4 h-4" />
+              <span className="hidden sm:block">Sign Out</span>
+            </button>
+          </div>
         </div>
       </header>
 
