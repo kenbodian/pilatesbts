@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { User, Mail, Lock, Waves } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { handleError, logError, validatePassword } from '../utils/errorHandling';
@@ -97,15 +98,6 @@ export function AuthPage() {
     <>
       <ToastContainer toasts={toasts} onClose={removeToast} />
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-teal-50 flex items-center justify-center p-4">
-      <div
-        className="absolute inset-0 opacity-5"
-        style={{
-          backgroundImage: `url('https://images.pexels.com/photos/416978/pexels-photo-416978.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop')`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center'
-        }}
-      />
-
       <div className="relative max-w-md w-full bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-8">
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-blue-600 to-teal-600 rounded-full mb-4">
@@ -200,7 +192,7 @@ export function AuthPage() {
           </button>
         </form>
 
-        <div className="mt-6 text-center">
+        <div className="mt-6 text-center space-y-3">
           <button
             type="button"
             onClick={() => setIsLogin(!isLogin)}
@@ -211,6 +203,14 @@ export function AuthPage() {
               : "Already have an account? Sign in"
             }
           </button>
+          <div>
+            <Link
+              to="/"
+              className="text-sm text-gray-500 hover:text-gray-800 transition-colors"
+            >
+              Back to the studio homepage
+            </Link>
+          </div>
         </div>
       </div>
     </div>

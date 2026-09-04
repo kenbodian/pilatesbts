@@ -1,37 +1,46 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { AuthPage } from './components/AuthPage';
 import { WaiverForm } from './components/WaiverForm';
 import { Dashboard } from './components/Dashboard';
 import { AdminDashboard } from './components/AdminDashboard';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { InstallBanner } from './components/InstallBanner';
+import { PublicHomePage } from './components/PublicHomePage';
 import { useAuth } from './hooks/useAuth';
 import { supabase } from './lib/supabase';
 import { handleError, logError } from './utils/errorHandling';
 
-type AppState = 'auth' | 'waiver' | 'dashboard' | 'admin';
+type MemberView = 'waiver' | 'dashboard' | 'admin';
 
-function App() {
+function LoadingScreen() {
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-teal-50 flex items-center justify-center">
+      <div className="text-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+        <p className="text-gray-600">Loading...</p>
+      </div>
+    </div>
+  );
+}
+
+function MemberArea() {
   const { user, loading } = useAuth();
-  const [appState, setAppState] = useState<AppState>('auth');
-  const [hasWaiver, setHasWaiver] = useState(false);
+  const [memberView, setMemberView] = useState<MemberView | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [checkingUserData, setCheckingUserData] = useState(false);
 
-  // Combined user data check - runs both queries in parallel
   useEffect(() => {
     const checkUserData = async () => {
       if (!user) {
-        setAppState('auth');
+        setMemberView(null);
         setIsAdmin(false);
-        setHasWaiver(false);
         return;
       }
 
       setCheckingUserData(true);
 
       try {
-        // Run both queries in parallel for better performance
         const [adminResult, waiverResult] = await Promise.all([
           supabase
             .from('user_roles')
@@ -45,28 +54,23 @@ function App() {
             .maybeSingle(),
         ]);
 
-        // Check admin status
         const adminStatus = adminResult.data?.role === 'admin' && !adminResult.error;
+        const waiverStatus = !!waiverResult.data && !waiverResult.error;
+
         setIsAdmin(adminStatus);
 
-        // Check waiver status (admins don't need waivers)
-        const waiverStatus = !!waiverResult.data && !waiverResult.error;
-        setHasWaiver(waiverStatus);
-
-        // Determine app state
         if (adminStatus) {
-          setAppState('admin');
+          setMemberView('admin');
         } else if (!waiverStatus) {
-          setAppState('waiver');
+          setMemberView('waiver');
         } else {
-          setAppState('dashboard');
+          setMemberView('dashboard');
         }
       } catch (error: unknown) {
         const appError = handleError(error);
         logError(appError, 'App.checkUserData');
+        setMemberView(null);
         setIsAdmin(false);
-        setHasWaiver(false);
-        setAppState('auth');
       } finally {
         setCheckingUserData(false);
       }
@@ -76,60 +80,85 @@ function App() {
   }, [user]);
 
   const handleWaiverComplete = () => {
-    setHasWaiver(true);
     // Admins previewing the intake form go back to the admin dashboard
-    setAppState(isAdmin ? 'admin' : 'dashboard');
+    setMemberView(isAdmin ? 'admin' : 'dashboard');
   };
 
+  const backToAdmin = isAdmin ? () => setMemberView('admin') : undefined;
+
   if (loading || checkingUserData) {
+    return <LoadingScreen />;
+  }
+
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
+
+  if (memberView === 'waiver') {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-teal-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading...</p>
-        </div>
-      </div>
+      <>
+        <WaiverForm
+          onComplete={handleWaiverComplete}
+          userEmail={user.email || ''}
+          previewMode={isAdmin}
+          onBackToAdmin={backToAdmin}
+        />
+        <InstallBanner />
+      </>
     );
   }
 
-  const renderContent = () => {
-    switch (appState) {
-      case 'auth':
-        return <AuthPage />;
-      case 'waiver':
-        return (
-          <WaiverForm
-            onComplete={handleWaiverComplete}
-            userEmail={user?.email || ''}
-            previewMode={isAdmin}
-            onBackToAdmin={isAdmin ? () => setAppState('admin') : undefined}
-          />
-        );
-      case 'admin':
-        return (
-          <AdminDashboard
-            user={user}
-            onViewSite={() => setAppState('dashboard')}
-            onViewIntakeForm={() => setAppState('waiver')}
-          />
-        );
-      case 'dashboard':
-        return (
-          <Dashboard
-            user={user}
-            isAdmin={isAdmin}
-            onBackToAdmin={isAdmin ? () => setAppState('admin') : undefined}
-          />
-        );
-      default:
-        return <AuthPage />;
-    }
-  };
+  return (
+    <>
+      {memberView === 'admin' ? (
+        <AdminDashboard
+          user={user}
+          onViewSite={() => setMemberView('dashboard')}
+          onViewIntakeForm={() => setMemberView('waiver')}
+        />
+      ) : (
+        <Dashboard user={user} isAdmin={isAdmin} onBackToAdmin={backToAdmin} />
+      )}
+      <InstallBanner />
+    </>
+  );
+}
 
+function LoginRoute() {
+  const { user, loading } = useAuth();
+
+  if (loading) {
+    return <LoadingScreen />;
+  }
+
+  if (user) {
+    return <Navigate to="/app" replace />;
+  }
+
+  return <AuthPage />;
+}
+
+function HomeRoute() {
+  const { user, loading } = useAuth();
+
+  if (!loading && user) {
+    return <Navigate to="/app" replace />;
+  }
+
+  return <PublicHomePage />;
+}
+
+function App() {
   return (
     <ErrorBoundary>
-      {renderContent()}
-      <InstallBanner />
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<HomeRoute />} />
+          <Route path="/login" element={<LoginRoute />} />
+          <Route path="/app" element={<MemberArea />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </BrowserRouter>
     </ErrorBoundary>
   );
 }
