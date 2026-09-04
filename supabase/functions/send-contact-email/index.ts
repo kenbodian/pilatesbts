@@ -105,6 +105,9 @@ Deno.serve(async (req: Request) => {
     const verifiedEmail = user.email!;
 
     const resendApiKey = Deno.env.get("RESEND_API_KEY");
+    // Resend's sandbox sender only delivers to the account owner. Set EMAIL_FROM to an
+    // address on a verified domain (resend.com/domains) to reach clients.
+    const emailFrom = Deno.env.get("EMAIL_FROM") || "Pilates by the Sea <onboarding@resend.dev>";
     const adminEmail = Deno.env.get("ADMIN_EMAIL") || "pilatesbts@gmail.com";
 
     if (!resendApiKey) {
@@ -119,7 +122,7 @@ Deno.serve(async (req: Request) => {
         "Authorization": `Bearer ${resendApiKey}`,
       },
       body: JSON.stringify({
-        from: "Pilates by the Sea <onboarding@resend.dev>",
+        from: emailFrom,
         to: [adminEmail],
         replyTo: verifiedEmail,
         subject: `Contact Form: ${escapeHtml(subject)}`,
@@ -187,7 +190,7 @@ Deno.serve(async (req: Request) => {
         "Authorization": `Bearer ${resendApiKey}`,
       },
       body: JSON.stringify({
-        from: "Pilates by the Sea <onboarding@resend.dev>",
+        from: emailFrom,
         to: [verifiedEmail],
         subject: "We received your message - Pilates by the Sea",
         html: `
